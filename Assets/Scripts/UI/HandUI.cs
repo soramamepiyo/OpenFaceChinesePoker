@@ -4,9 +4,9 @@ using UnityEngine;
 public class HandUI : MonoBehaviour
 {
     [Header("カードを並べる位置")]
-    [SerializeField] private Transform frontArea;
+    [SerializeField] private Transform topArea;
     [SerializeField] private Transform middleArea;
-    [SerializeField] private Transform backArea;
+    [SerializeField] private Transform bottomArea;
 
     [Header("カード配置設定")]
     [SerializeField] private float spacing = 0.5f;
@@ -20,9 +20,9 @@ public class HandUI : MonoBehaviour
     public void RenderHand(Hand hand)
     {
         ClearHand();
-        RenderRow(hand.front, frontArea);
+        RenderRow(hand.top, topArea);
         RenderRow(hand.middle, middleArea);
-        RenderRow(hand.back, backArea);
+        RenderRow(hand.bottom, bottomArea);
     }
 
     private void RenderRow(List<Card> cards, Transform parent)

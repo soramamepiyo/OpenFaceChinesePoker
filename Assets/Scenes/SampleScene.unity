@@ -452,9 +452,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75a6e4485890d7f469fa9e69e51976ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  frontArea: {fileID: 1810434270}
+  topArea: {fileID: 1810434270}
   middleArea: {fileID: 1370952968}
-  backArea: {fileID: 1617345296}
+  bottomArea: {fileID: 1617345296}
   spacing: 0.5
   prefabFolder: Asset_PlayingCards/Prefabs/Deck05
 --- !u!4 &433150333
@@ -697,9 +697,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75a6e4485890d7f469fa9e69e51976ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  frontArea: {fileID: 0}
+  topArea: {fileID: 0}
   middleArea: {fileID: 0}
-  backArea: {fileID: 0}
+  bottomArea: {fileID: 0}
   spacing: 0.5
   prefabFolder: PlayingCards/Deck05
 --- !u!114 &1677895158

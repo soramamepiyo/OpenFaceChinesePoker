@@ -1,27 +1,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum RowType { Front, Middle, Back }
-
 [System.Serializable]
 public class Hand
 {
-    public List<Card> front = new List<Card>();  // 3–‡
+    public List<Card> top = new List<Card>();  // 3–‡
     public List<Card> middle = new List<Card>(); // 5–‡
-    public List<Card> back = new List<Card>();   // 5–‡
+    public List<Card> bottom = new List<Card>();   // 5–‡
 
     public void AddCard(Card card, RowType row)
     {
         switch (row)
         {
-            case RowType.Front:
-                if (front.Count < 3) front.Add(card);
+            case RowType.Top:
+                if (top.Count < 3) top.Add(card);
                 break;
             case RowType.Middle:
                 if (middle.Count < 5) middle.Add(card);
                 break;
-            case RowType.Back:
-                if (back.Count < 5) back.Add(card);
+            case RowType.Bottom:
+                if (bottom.Count < 5) bottom.Add(card);
                 break;
         }
     }
@@ -29,18 +27,18 @@ public class Hand
     public bool IsValid()
     {
         // ƒVƒ“ƒvƒ‹‚È—á: ‚·‚×‚Ä–„‚Ü‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©
-        return front.Count == 3 && middle.Count == 5 && back.Count == 5;
+        return top.Count == 3 && middle.Count == 5 && bottom.Count == 5;
     }
 
     public void Reset()
     {
-        front.Clear();
+        top.Clear();
         middle.Clear();
-        back.Clear();
+        bottom.Clear();
     }
 
     public override string ToString()
     {
-        return $"Front[{front.Count}] Middle[{middle.Count}] Back[{back.Count}]";
+        return $"Top[{top.Count}] Middle[{middle.Count}] Bottom[{bottom.Count}]";
     }
 }

@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
             for (int i = 0; i < 5; i++)
             {
                 var card = deck.Draw();
-                player.hand.AddCard(card, RowType.Back); // ‚Æ‚è‚ ‚¦‚¸Back‚É‘S•”
+                player.hand.AddCard(card, RowType.Bottom); // ‚Æ‚è‚ ‚¦‚¸Bottom‚É‘S•”
             }
             Debug.Log($"{player.playerName} initial hand: {player.hand}");
         }
