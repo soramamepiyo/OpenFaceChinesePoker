@@ -1,83 +1,113 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HandUI : MonoBehaviour
 {
-    [Header("カードを並べる位置")]
+    [Header("カードエリア")]
     [SerializeField] private Transform topArea;
     [SerializeField] private Transform middleArea;
     [SerializeField] private Transform bottomArea;
+    [SerializeField] private Transform trashArea;
+    [SerializeField] private Transform unplacedArea; // 配られた未配置カード置き場
 
-    [Header("カード配置設定")]
-    [SerializeField] private float spacing = 0.5f;
-
-    [Header("カードPrefabが入っているフォルダ名")]
+    [Header("カードPrefab設定")]
+    [SerializeField] private GameObject cardPrefab; // 操作用CardPrefab
     [SerializeField] private string prefabFolder = "Asset_PlayingCards/Prefabs/Deck05";
     // 例: Assets/Resources/Asset_PlayingCards/Prefabs/Deck05/Deck05_Club_A.prefab
 
-    private List<GameObject> activeCards = new List<GameObject>();
+    [Header("決定ボタン")]
+    [SerializeField] private Button confirmButton;
 
-    public void RenderHand(Hand hand)
+    private List<CardUI> allCardUIs = new List<CardUI>();
+
+    private void Start()
     {
-        ClearHand();
-        RenderRow(hand.top, topArea);
-        RenderRow(hand.middle, middleArea);
-        RenderRow(hand.bottom, bottomArea);
+        confirmButton.interactable = false;
     }
 
-    private void RenderRow(List<Card> cards, Transform parent)
+    /// <summary>
+    /// 配られたカードを未配置エリアに生成
+    /// </summary>
+    public void RenderInitialHand(List<Card> dealtCards)
     {
-        for (int i = 0; i < cards.Count; i++)
+        foreach (var card in dealtCards)
         {
-            Card card = cards[i];
-            string prefabName = GetPrefabName(card);
+            GameObject go = Instantiate(cardPrefab, unplacedArea);
+            CardUI cardUI = go.GetComponent<CardUI>();
+            cardUI.Initialize(card, this);
+            allCardUIs.Add(cardUI);
+        }
 
-            GameObject prefab = Resources.Load<GameObject>($"{prefabFolder}/{prefabName}");
-            if (prefab == null)
+        UpdateConfirmButtonState();
+    }
+
+    /// <summary>
+    /// 配置済みかどうか確認してConfirmButtonを更新
+    /// </summary>
+    public void UpdateConfirmButtonState()
+    {
+        bool allPlaced = true;
+        foreach (var cardUI in allCardUIs)
+        {
+            if (cardUI.CurrentArea == AreaType.Unplaced || cardUI.CurrentArea == AreaType.Trash)
             {
-                Debug.LogWarning($"Prefab not found: {prefabName}");
-                continue;
+                allPlaced = false;
+                break;
+            }
+        }
+
+        confirmButton.interactable = allPlaced;
+    }
+
+    /// <summary>
+    /// Card に対応する見た目Prefabを返す
+    /// </summary>
+    public GameObject GetCardPrefab(Card card)
+    {
+        string prefabName = "";
+
+        if (card.suit == SuitType.Joker)
+        {
+            prefabName = "Deck05_Joker";
+        }
+        else
+        {
+            string suitStr = card.suit.ToString(); // Clubs, Hearts, etc.
+            string rankStr = "";
+
+            switch (card.rank)
+            {
+                case RankType.Ace: rankStr = "A"; break;
+                case RankType.Jack: rankStr = "J"; break;
+                case RankType.Queen: rankStr = "Q"; break;
+                case RankType.King: rankStr = "K"; break;
+                default: rankStr = ((int)card.rank).ToString(); break;
             }
 
-            Vector3 pos = parent.position + new Vector3(i * spacing, 0, 0);
-            GameObject go = Instantiate(prefab, pos, Quaternion.identity, parent);
-            activeCards.Add(go);
+            prefabName = $"Deck05_{suitStr}_{rankStr}";
         }
+
+        string path = $"{prefabFolder.TrimEnd('/')}/{prefabName}";
+        GameObject prefab = Resources.Load<GameObject>(path);
+
+        if (prefab == null)
+        {
+            Debug.LogWarning($"Card Prefab not found: {path}");
+        }
+
+        return prefab;
     }
 
-    private string GetPrefabName(Card card)
-    {
-        string suitStr = "";
-        string rankStr = "";
-
-        switch (card.suit)
-        {
-            case SuitType.Clubs: suitStr = "Club"; break;
-            case SuitType.Diamonds: suitStr = "Diamond"; break;
-            case SuitType.Hearts: suitStr = "Heart"; break;
-            case SuitType.Spades: suitStr = "Spade"; break;
-            case SuitType.Joker: return "Deck05_Joker"; // Joker特例
-        }
-
-        // Rank変換（1→A, 11→J, 12→Q, 13→K）
-        switch (card.rank)
-        {
-            case RankType.Ace: rankStr = "A"; break;
-            case RankType.Jack: rankStr = "J"; break;
-            case RankType.Queen: rankStr = "Q"; break;
-            case RankType.King: rankStr = "K"; break;
-            default: rankStr = ((int)card.rank).ToString(); break;
-        }
-
-        return $"Deck05_{suitStr}_{rankStr}";
-    }
-
+    /// <summary>
+    /// すべてのカードを削除（再描画用）
+    /// </summary>
     public void ClearHand()
     {
-        foreach (var go in activeCards)
+        foreach (var cardUI in allCardUIs)
         {
-            if (go != null) Destroy(go);
+            if (cardUI != null) Destroy(cardUI.gameObject);
         }
-        activeCards.Clear();
+        allCardUIs.Clear();
     }
 }

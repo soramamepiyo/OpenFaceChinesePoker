@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         StartGame();
-        playerHandUI.RenderHand(players[0].hand);
     }
 
     public void StartGame()
