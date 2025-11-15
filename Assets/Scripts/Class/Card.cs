@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum SuitType { Hearts, Diamonds, Clubs, Spades, Joker }
+public enum SuitType { Heart, Diamond, Club, Spade, Joker }
 public enum RankType
 {
     Two = 2, Three, Four, Five, Six, Seven, Eight, Nine, Ten,

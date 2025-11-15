@@ -16,7 +16,7 @@ public class Deck
         cards.Clear();
 
         // ’Êí‚Ì52–‡‚ğ’Ç‰Á
-        foreach (SuitType suit in new[] { SuitType.Hearts, SuitType.Diamonds, SuitType.Clubs, SuitType.Spades })
+        foreach (SuitType suit in new[] { SuitType.Heart, SuitType.Diamond, SuitType.Club, SuitType.Spade })
         {
             foreach (RankType rank in System.Enum.GetValues(typeof(RankType)))
             {

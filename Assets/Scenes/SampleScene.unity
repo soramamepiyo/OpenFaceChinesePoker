@@ -285,7 +285,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   players: []
-  playerHandUI: {fileID: 0}
+  playerHandUI: {fileID: 433150334}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0

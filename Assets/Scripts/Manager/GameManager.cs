@@ -33,13 +33,21 @@ public class GameManager : MonoBehaviour
     {
         foreach (var player in players)
         {
+            // 手札情報（Top/Middle/Bottom）をリセット
             player.ResetHand();
-            for (int i = 0; i < 5; i++)
-            {
-                var card = deck.Draw();
-                player.hand.AddCard(card, RowType.Bottom); // とりあえずBottomに全部
-            }
-            Debug.Log($"{player.playerName} initial hand: {player.hand}");
+
+            // 5枚のカードを新しく生成（テスト用）
+            List<Card> dealtCards = new List<Card>
+        {
+            new Card(SuitType.Club, RankType.Two),
+            new Card(SuitType.Spade, RankType.Five),
+            new Card(SuitType.Heart, RankType.Ace),
+            new Card(SuitType.Diamond, RankType.Jack),
+            new Card(SuitType.Joker, RankType.Joker)
+        };
+
+            // 配られたカードを UI の UnplacedArea に並べる
+            playerHandUI.RenderInitialHand(dealtCards);
         }
     }
 
