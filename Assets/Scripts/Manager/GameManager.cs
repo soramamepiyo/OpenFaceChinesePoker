@@ -23,7 +23,8 @@ public class GameManager : MonoBehaviour
 
         players.Clear();
         players.Add(new Player("Player"));
-        players.Add(new Player("CPU", true));
+        // todo: 一旦CPUはコメントアウト
+        // players.Add(new Player("CPU", true));
 
         DealInitialCards();
         gameStarted = true;
