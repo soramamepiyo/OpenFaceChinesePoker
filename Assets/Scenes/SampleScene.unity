@@ -593,13 +593,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75a6e4485890d7f469fa9e69e51976ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unplacedArea: {fileID: 2077969577}
   topArea: {fileID: 1810434270}
   middleArea: {fileID: 1370952968}
   bottomArea: {fileID: 1617345296}
   trashArea: {fileID: 1446842157}
-  unplacedArea: {fileID: 2077969577}
-  cardPrefab: {fileID: 5786756419724653286, guid: 483dece7ea22e4d4db1f819081ccba7a, type: 3}
-  prefabFolder: Asset_PlayingCards/Prefabs/Deck05
+  cardPrefab: {fileID: 8025327956927293625, guid: 5c4aee918957ad448b57cf8a1d0b5811, type: 3}
   confirmButton: {fileID: 173588272}
 --- !u!1 &699119094
 GameObject:

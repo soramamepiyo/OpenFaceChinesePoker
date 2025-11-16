@@ -1,3 +1,4 @@
+using Mono.Cecil;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,46 +6,37 @@ using UnityEngine.UI;
 public class HandUI : MonoBehaviour
 {
     [Header("カードエリア")]
-    [SerializeField] private Transform topArea;
-    [SerializeField] private Transform middleArea;
-    [SerializeField] private Transform bottomArea;
-    [SerializeField] private Transform trashArea;
-    [SerializeField] private Transform unplacedArea; // 配られた未配置カード置き場
+    public Transform unplacedArea;
+    public Transform topArea;
+    public Transform middleArea;
+    public Transform bottomArea;
+    public Transform trashArea;
 
-    [Header("カードPrefab設定")]
-    [SerializeField] private GameObject cardPrefab; // 操作用CardPrefab
-    [SerializeField] private string prefabFolder = "Asset_PlayingCards/Prefabs/Deck05";
-    // 例: Assets/Resources/Asset_PlayingCards/Prefabs/Deck05/Deck05_Club_A.prefab
+    [Header("Prefab")]
+    public GameObject cardPrefab;
 
     [Header("決定ボタン")]
-    [SerializeField] private Button confirmButton;
+    public Button confirmButton;
 
     private List<CardUI> allCardUIs = new List<CardUI>();
+    private float spacing = 1.5f; // 横並び間隔
 
-    private void Start()
-    {
-        confirmButton.interactable = false;
-    }
-
-    /// <summary>
-    /// 配られたカードを未配置エリアに生成
-    /// </summary>
     public void RenderInitialHand(List<Card> dealtCards)
     {
+        ClearHand();
+
         foreach (var card in dealtCards)
         {
             GameObject go = Instantiate(cardPrefab, unplacedArea);
-            CardUI cardUI = go.GetComponent<CardUI>();
-            cardUI.Initialize(card, this);
-            allCardUIs.Add(cardUI);
+            CardUI c = go.GetComponent<CardUI>();
+            c.Initialize(card, this);
+            allCardUIs.Add(c);
         }
 
+        ArrangeCards(unplacedArea);
         UpdateConfirmButtonState();
     }
 
-    /// <summary>
-    /// 配置済みかどうか確認してConfirmButtonを更新
-    /// </summary>
     public void UpdateConfirmButtonState()
     {
         bool allPlaced = true;
@@ -56,57 +48,51 @@ public class HandUI : MonoBehaviour
                 break;
             }
         }
-
         confirmButton.interactable = allPlaced;
     }
 
-    /// <summary>
-    /// Card に対応する見た目Prefabを返す
-    /// </summary>
-    public GameObject GetCardPrefab(Card card)
+    public Sprite GetCardSprite(Card card)
     {
-        string prefabName = "";
-
-        if (card.suit == SuitType.Joker)
-        {
-            prefabName = "Deck05_Joker";
-        }
-        else
-        {
-            string suitStr = card.suit.ToString(); // Clubs, Hearts, etc.
-            string rankStr = "";
-
-            switch (card.rank)
-            {
-                case RankType.Ace: rankStr = "A"; break;
-                case RankType.Jack: rankStr = "J"; break;
-                case RankType.Queen: rankStr = "Q"; break;
-                case RankType.King: rankStr = "K"; break;
-                default: rankStr = ((int)card.rank).ToString(); break;
-            }
-
-            prefabName = $"Deck05_{suitStr}_{rankStr}";
-        }
-
-        string path = $"{prefabFolder.TrimEnd('/')}/{prefabName}";
-        GameObject prefab = Resources.Load<GameObject>(path);
-
-        if (prefab == null)
-        {
-            Debug.LogWarning($"Card Prefab not found: {path}");
-        }
-
-        return prefab;
+        int id = GetDeck05ID(card);
+        string path = $"Deck/Deck05/Deck05_{id}";
+        Sprite s = Resources.Load<Sprite>(path);
+        if (s == null)
+            Debug.LogWarning($"Sprite not found: {path}");
+        return s;
     }
 
-    /// <summary>
-    /// すべてのカードを削除（再描画用）
-    /// </summary>
+    private int GetDeck05ID(Card card)
+    {
+        if (card.IsJoker()) return 56;
+
+        int index = (card.rank == RankType.Ace) ? 0 : ((int)card.rank - 1);
+
+        switch (card.suit)
+        {
+            case SuitType.Heart: return 0 + index;
+            case SuitType.Club: return 14 + index;
+            case SuitType.Diamond: return 28 + index;
+            case SuitType.Spade: return 42 + index;
+            default: return -1;
+        }
+    }
+
+    private void ArrangeCards(Transform parent)
+    {
+        int n = parent.childCount;
+        float startX = -spacing * (n - 1) / 2f;
+        for (int i = 0; i < n; i++)
+        {
+            Transform c = parent.GetChild(i);
+            c.localPosition = new Vector3(startX + spacing * i, 0, 0);
+        }
+    }
+
     public void ClearHand()
     {
-        foreach (var cardUI in allCardUIs)
+        foreach (var c in allCardUIs)
         {
-            if (cardUI != null) Destroy(cardUI.gameObject);
+            if (c != null) Destroy(c.gameObject);
         }
         allCardUIs.Clear();
     }

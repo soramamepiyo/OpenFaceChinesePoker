@@ -1,3 +1,4 @@
+using Mono.Cecil;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,84 +11,67 @@ public enum AreaType
     Trash
 }
 
+
 public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [Header("カードデータ")]
     public Card cardData;
+    public AreaType CurrentArea = AreaType.Unplaced;
 
-    [HideInInspector] public AreaType CurrentArea = AreaType.Unplaced;
+    [SerializeField] private Transform frontTransform;
+    [SerializeField] private Transform backTransform;
+    private SpriteRenderer frontRenderer;
+    private SpriteRenderer backRenderer;
 
     private HandUI handUI;
-
-    // ドラッグ用
-    private Canvas canvas;
-    private RectTransform rectTransform;
-    private CanvasGroup canvasGroup;
     private Vector3 originalPosition;
 
-    /// <summary>
-    /// 初期化
-    /// </summary>
+    private void Awake()
+    {
+        frontRenderer = frontTransform.GetComponent<SpriteRenderer>();
+        backRenderer = backTransform.GetComponent<SpriteRenderer>();
+    }
+
     public void Initialize(Card card, HandUI handUI)
     {
         this.cardData = card;
         this.handUI = handUI;
-
-        canvas = GetComponentInParent<Canvas>();
-        rectTransform = GetComponent<RectTransform>();
-        canvasGroup = GetComponent<CanvasGroup>();
-
         originalPosition = transform.position;
 
-        // 見た目を差し替え
         SetCardAppearance(card);
     }
 
-    /// <summary>
-    /// カードの見た目を差し替える
-    /// </summary>
-    private void SetCardAppearance(Card card)
+    public void SetCardAppearance(Card card)
     {
-        // 既存の子オブジェクトを削除
-        foreach (Transform child in transform)
+        if (frontRenderer != null)
         {
-            Destroy(child.gameObject);
-        }
-
-        // カードに対応するPrefabを取得
-        GameObject prefab = handUI.GetCardPrefab(card);
-        if (prefab != null)
-        {
-            GameObject go = Instantiate(prefab, transform);
-            go.transform.localPosition = Vector3.zero;
-            go.transform.localRotation = Quaternion.identity;
-        }
-        else
-        {
-            Debug.LogWarning("カードPrefabが見つかりません: " + card.rank + " " + card.suit);
+            Sprite sprite = handUI.GetCardSprite(card);
+            if (sprite != null)
+            {
+                frontRenderer.sprite = sprite;
+            }
+            else
+            {
+                Debug.LogWarning("Sprite not found for card: " + card);
+            }
         }
     }
 
-    #region ドラッグ処理
-
+    #region Drag
     public void OnBeginDrag(PointerEventData eventData)
     {
-        canvasGroup.alpha = 0.6f;
-        canvasGroup.blocksRaycasts = false;
         originalPosition = transform.position;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+        Vector3 worldPoint = Camera.main.ScreenToWorldPoint(eventData.position);
+        worldPoint.z = 0;
+        transform.position = worldPoint;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        canvasGroup.alpha = 1f;
-        canvasGroup.blocksRaycasts = true;
-
-        // ドロップ先があるか確認
+        // Drop先判定
         if (eventData.pointerEnter != null)
         {
             DropArea dropArea = eventData.pointerEnter.GetComponentInParent<DropArea>();
@@ -99,15 +83,11 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             }
         }
 
-        // ドロップ先が無ければ元の位置に戻す
+        // ドロップ先がなければ元に戻す
         transform.position = originalPosition;
     }
-
     #endregion
 
-    /// <summary>
-    /// カードを特定のエリアに配置
-    /// </summary>
     public void SetArea(AreaType newArea, Transform newParent)
     {
         CurrentArea = newArea;
