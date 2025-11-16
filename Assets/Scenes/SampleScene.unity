@@ -598,7 +598,7 @@ MonoBehaviour:
   bottomArea: {fileID: 1617345296}
   trashArea: {fileID: 1446842157}
   unplacedArea: {fileID: 2077969577}
-  cardPrefab: {fileID: 5149421745586454588, guid: 1cf8010d8e9d90b4d979f5f2ab938b2f, type: 3}
+  cardPrefab: {fileID: 5786756419724653286, guid: 483dece7ea22e4d4db1f819081ccba7a, type: 3}
   prefabFolder: Asset_PlayingCards/Prefabs/Deck05
   confirmButton: {fileID: 173588272}
 --- !u!1 &699119094
