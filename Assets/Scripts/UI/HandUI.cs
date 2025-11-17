@@ -33,7 +33,7 @@ public class HandUI : MonoBehaviour
             allCardUIs.Add(c);
         }
 
-        ArrangeCards(unplacedArea);
+        ArrangeCardsInArea(unplacedArea);
         UpdateConfirmButtonState();
     }
 
@@ -88,6 +88,24 @@ public class HandUI : MonoBehaviour
             {
                 cards.Add(child);
             }
+        }
+
+        int n = cards.Count;
+        float startX = -spacing * (n - 1) / 2f;
+
+        for (int i = 0; i < n; i++)
+        {
+            cards[i].localPosition = new Vector3(startX + spacing * i, 0, 0);
+        }
+    }
+
+    public void ArrangeCardsInArea(Transform area)
+    {
+        List<Transform> cards = new List<Transform>();
+        foreach (Transform child in area)
+        {
+            if (child.CompareTag("Card"))
+                cards.Add(child);
         }
 
         int n = cards.Count;

@@ -78,14 +78,27 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             if (dropArea != null)
             {
                 SetArea(dropArea.areaType, dropArea.transform);
+
+                // スナップ処理
+                SnapToParent(dropArea.transform);
+
+                handUI.ArrangeCardsInArea(dropArea.transform);
                 handUI.UpdateConfirmButtonState();
                 return;
             }
         }
 
-        // ドロップ先がなければ元に戻す
+        // ドロップ先がなければ元の位置に戻す
         transform.position = originalPosition;
     }
+
+    private void SnapToParent(Transform parent)
+    {
+        // 位置を親のローカル座標系にリセット
+        transform.SetParent(parent);
+        transform.localPosition = Vector3.zero;
+    }
+
     #endregion
 
     public void SetArea(AreaType newArea, Transform newParent)
