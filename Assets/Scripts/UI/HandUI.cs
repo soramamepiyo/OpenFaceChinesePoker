@@ -19,7 +19,7 @@ public class HandUI : MonoBehaviour
     public Button confirmButton;
 
     private List<CardUI> allCardUIs = new List<CardUI>();
-    private float spacing = 1.5f; // ‰¡•À‚ÑŠÔŠu
+    private float spacing = 1.2f; // ‰¡•À‚ÑŠÔŠu
 
     public void RenderInitialHand(List<Card> dealtCards)
     {
@@ -79,12 +79,23 @@ public class HandUI : MonoBehaviour
 
     private void ArrangeCards(Transform parent)
     {
-        int n = parent.childCount;
+        List<Transform> cards = new List<Transform>();
+
+        // Tag == "Card" ‚Ìq‚¾‚¯‚ğ’Šo
+        foreach (Transform child in parent)
+        {
+            if (child.CompareTag("Card"))
+            {
+                cards.Add(child);
+            }
+        }
+
+        int n = cards.Count;
         float startX = -spacing * (n - 1) / 2f;
+
         for (int i = 0; i < n; i++)
         {
-            Transform c = parent.GetChild(i);
-            c.localPosition = new Vector3(startX + spacing * i, 0, 0);
+            cards[i].localPosition = new Vector3(startX + spacing * i, 0, 0);
         }
     }
 
