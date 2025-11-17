@@ -1,4 +1,3 @@
-using Mono.Cecil;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,7 +9,6 @@ public enum AreaType
     Bottom,
     Trash
 }
-
 
 public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -46,13 +44,9 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
         {
             Sprite sprite = handUI.GetCardSprite(card);
             if (sprite != null)
-            {
                 frontRenderer.sprite = sprite;
-            }
             else
-            {
                 Debug.LogWarning("Sprite not found for card: " + card);
-            }
         }
     }
 
@@ -71,34 +65,33 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // Drop先判定
-        if (eventData.pointerEnter != null)
+        // カードを元に戻す初期位置
+        transform.position = originalPosition;
+
+        // 画面座標をワールド座標に変換
+        Vector3 worldPoint3D = Camera.main.ScreenToWorldPoint(eventData.position);
+        worldPoint3D.z = 0f; // カードと HitArea の Z を同じにする
+
+        int dropAreaLayer = LayerMask.GetMask("DropArea");
+        RaycastHit2D hit = Physics2D.Raycast(worldPoint3D, Vector2.zero, Mathf.Infinity, dropAreaLayer);
+
+        if (hit.collider != null)
         {
-            DropArea dropArea = eventData.pointerEnter.GetComponentInParent<DropArea>();
+            // 親に DropArea がついているかチェック
+            DropArea dropArea = hit.collider.GetComponentInParent<DropArea>();
             if (dropArea != null)
             {
+                // エリアにカードを移動
                 SetArea(dropArea.areaType, dropArea.transform);
-
-                // スナップ処理
-                SnapToParent(dropArea.transform);
-
                 handUI.ArrangeCardsInArea(dropArea.transform);
                 handUI.UpdateConfirmButtonState();
                 return;
             }
         }
 
-        // ドロップ先がなければ元の位置に戻す
+        // ここまで来たら DropArea にヒットせず、元に戻す
         transform.position = originalPosition;
     }
-
-    private void SnapToParent(Transform parent)
-    {
-        // 位置を親のローカル座標系にリセット
-        transform.SetParent(parent);
-        transform.localPosition = Vector3.zero;
-    }
-
     #endregion
 
     public void SetArea(AreaType newArea, Transform newParent)
