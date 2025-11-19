@@ -14,4 +14,9 @@ public class DropArea : MonoBehaviour, IDropHandler
         // 実際の処理は CardUI 内で行うので空でもOK
         // このスクリプトを置くことで PointerEnter から判定可能にする
     }
+
+    public int GetMaxAlignCards()
+    {
+        return (areaType == AreaType.Top) ? 3 : 5;
+    }
 }

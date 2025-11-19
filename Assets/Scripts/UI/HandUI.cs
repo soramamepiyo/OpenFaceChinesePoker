@@ -33,7 +33,7 @@ public class HandUI : MonoBehaviour
             allCardUIs.Add(c);
         }
 
-        ArrangeCardsInArea(unplacedArea);
+        ArrangeAlignCenter(unplacedArea);
         UpdateConfirmButtonState();
     }
 
@@ -82,7 +82,8 @@ public class HandUI : MonoBehaviour
         }
     }
 
-    public void ArrangeCardsInArea(Transform area)
+    // ’†‰›‘µ‚¦
+    public void ArrangeAlignCenter(Transform area)
     {
         List<Transform> cards = new List<Transform>();
         foreach (Transform child in area)
@@ -93,6 +94,24 @@ public class HandUI : MonoBehaviour
 
         int n = cards.Count;
         float startX = -spacing * (n - 1) / 2f;
+        for (int i = 0; i < n; i++)
+        {
+            cards[i].localPosition = new Vector3(startX + spacing * i, 0, 0);
+        }
+    }
+
+    // ¶‘µ‚¦
+    public void ArrangeAlignLeft(Transform area, int max_cards)
+    {
+        List<Transform> cards = new List<Transform>();
+        foreach (Transform child in area)
+        {
+            if (child.CompareTag("Card"))
+                cards.Add(child);
+        }
+
+        int n = cards.Count;
+        float startX = -spacing * (max_cards - 1) / 2f;
         for (int i = 0; i < n; i++)
         {
             cards[i].localPosition = new Vector3(startX + spacing * i, 0, 0);

@@ -82,7 +82,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             {
                 // エリアにカードを移動
                 SetArea(dropArea.areaType, dropArea.transform);
-                handUI.ArrangeCardsInArea(dropArea.transform);
+                handUI.ArrangeAlignLeft(dropArea.transform, dropArea.GetMaxAlignCards());
                 handUI.UpdateConfirmButtonState();
                 return;
             }
@@ -97,6 +97,10 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     {
         CurrentArea = newArea;
         transform.SetParent(newParent);
+
+        // 配置したカードは右端（最後）に来るようにする
+        transform.SetAsLastSibling();
+
         transform.localPosition = Vector3.zero;
     }
 }
