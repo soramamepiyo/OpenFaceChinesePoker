@@ -10,7 +10,6 @@ public class HandUI : MonoBehaviour
     public Transform topArea;
     public Transform middleArea;
     public Transform bottomArea;
-    public Transform trashArea;
 
     [Header("Prefab")]
     public GameObject cardPrefab;
@@ -43,7 +42,7 @@ public class HandUI : MonoBehaviour
         bool allPlaced = true;
         foreach (var cardUI in allCardUIs)
         {
-            if (cardUI.CurrentArea == AreaType.Unplaced || cardUI.CurrentArea == AreaType.Trash)
+            if (cardUI.CurrentArea == AreaType.Unplaced)
             {
                 allPlaced = false;
                 break;

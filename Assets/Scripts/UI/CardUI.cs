@@ -6,8 +6,7 @@ public enum AreaType
     Unplaced,
     Top,
     Middle,
-    Bottom,
-    Trash
+    Bottom
 }
 
 public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler

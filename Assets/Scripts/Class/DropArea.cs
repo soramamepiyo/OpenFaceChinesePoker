@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// カードを受け取るエリア（Top / Middle / Bottom / Trash / Unplaced）
+/// カードを受け取るエリア（Top / Middle / Bottom / Unplaced）
 /// ドラッグ＆ドロップの判定用
 /// </summary>
 public class DropArea : MonoBehaviour, IDropHandler
