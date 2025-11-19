@@ -39,16 +39,23 @@ public class HandUI : MonoBehaviour
 
     public void UpdateConfirmButtonState()
     {
-        bool allPlaced = true;
+        int placedCount = 0;
+
         foreach (var cardUI in allCardUIs)
         {
+            // Unplaced にある → まだ配置されていない
             if (cardUI.CurrentArea == AreaType.Unplaced)
             {
-                allPlaced = false;
-                break;
+                confirmButton.interactable = false;
+                return;
             }
+
+            // それ以外（Top / Middle / Bottom）は配置済み
+            placedCount++;
         }
-        confirmButton.interactable = allPlaced;
+
+        // 5枚すべて配置されていたら押せる
+        confirmButton.interactable = (placedCount == 5);
     }
 
     public Sprite GetCardSprite(Card card)
