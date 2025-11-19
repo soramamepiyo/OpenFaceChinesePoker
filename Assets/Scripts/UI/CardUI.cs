@@ -80,11 +80,14 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             DropArea dropArea = hit.collider.GetComponentInParent<DropArea>();
             if (dropArea != null)
             {
-                // エリアにカードを移動
-                SetArea(dropArea.areaType, dropArea.transform);
-                handUI.ArrangeAlignLeft(dropArea.transform, dropArea.GetMaxAlignCards());
-                handUI.UpdateConfirmButtonState();
-                return;
+                if (dropArea.IsEnablePlace())
+                {
+                    // エリアにカードを移動
+                    SetArea(dropArea.areaType, dropArea.transform);
+                    handUI.ArrangeAlignLeft(dropArea.transform, dropArea.GetMaxAlignCards());
+                    handUI.UpdateConfirmButtonState();
+                    return;
+                }
             }
         }
 

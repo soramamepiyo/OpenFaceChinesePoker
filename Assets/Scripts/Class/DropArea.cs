@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static UnityEngine.Rendering.GPUSort;
 
 /// <summary>
 /// カードを受け取るエリア（Top / Middle / Bottom / Unplaced）
@@ -18,5 +19,16 @@ public class DropArea : MonoBehaviour, IDropHandler
     public int GetMaxAlignCards()
     {
         return (areaType == AreaType.Top) ? 3 : 5;
+    }
+
+    public bool IsEnablePlace()
+    {
+        int cardsNum = 0;
+        foreach (Transform child in this.transform)
+        {
+            if (child.CompareTag("Card")) cardsNum++;
+                
+        }
+        return cardsNum < GetMaxAlignCards();
     }
 }
