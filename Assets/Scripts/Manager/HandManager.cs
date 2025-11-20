@@ -1,12 +1,23 @@
+using Mono.Cecil;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
+
+public enum PlacePhase
+{
+    First,  // 5
+    Second, // 3
+    Third,  // 3
+    Fourth, // 3
+    Fifth   // 5
+}
 
 public class HandManager : MonoBehaviour
 {
     [SerializeField] private HandUI playerHandUI;
     private Deck deck;
     private List<Player> players;
+    [SerializeField] private PlacePhase currentPhase;
 
     public void Init(List<Player> gamePlayers)
     {
@@ -14,6 +25,7 @@ public class HandManager : MonoBehaviour
 
         players = gamePlayers;
         deck = new Deck();
+        currentPhase = PlacePhase.First;
 
         players.Clear();
         players.Add(new Player("Player"));
@@ -22,7 +34,7 @@ public class HandManager : MonoBehaviour
 
         DealInitialCards();
     }
-    
+
     private void DealInitialCards()
     {
         foreach (var player in players)
@@ -30,18 +42,20 @@ public class HandManager : MonoBehaviour
             // 手札情報（Top/Middle/Bottom）をリセット
             player.ResetHand();
 
-            // 5枚のカードを新しく生成（テスト用）
-            List<Card> dealtCards = new List<Card>
-        {
-            new Card(SuitType.Club, RankType.Two),
-            new Card(SuitType.Spade, RankType.Five),
-            new Card(SuitType.Heart, RankType.Ace),
-            new Card(SuitType.Diamond, RankType.Jack),
-            new Card(SuitType.Joker, RankType.Joker)
-        };
-
+            // カードを新しく生成
+            List<Card> dealtCards = new List<Card>();
+            for (int i = 0; i < GetDrawCardsNum(currentPhase); i++)
+            {
+                dealtCards.Add(deck.Draw());
+            }
+        
             // 配られたカードを UI の UnplacedArea に並べる
             playerHandUI.RenderInitialHand(dealtCards);
         }
+    }
+
+    public int GetDrawCardsNum(PlacePhase round)
+    {
+        return (round == PlacePhase.First) ? 5 : 3;
     }
 }
