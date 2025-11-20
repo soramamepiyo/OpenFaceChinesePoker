@@ -14,10 +14,10 @@ public enum PlacePhase
 
 public class HandManager : MonoBehaviour
 {
-    [SerializeField] private HandUI playerHandUI;
-    private Deck deck;
     private List<Player> players;
+    private Deck deck;
     [SerializeField] private PlacePhase currentPhase;
+    [SerializeField] private HandUI playerHandUI;
 
     public void Init(List<Player> gamePlayers)
     {
@@ -58,4 +58,6 @@ public class HandManager : MonoBehaviour
     {
         return (round == PlacePhase.First) ? 5 : 3;
     }
+
+    public PlacePhase GetCurrentPhase() { return currentPhase; }
 }

@@ -54,6 +54,7 @@ MonoBehaviour:
   bottomArea: {fileID: 3732363161846877258}
   cardPrefab: {fileID: 8025327956927293625, guid: 5c4aee918957ad448b57cf8a1d0b5811, type: 3}
   confirmButton: {fileID: 3388485727849660257}
+  handManager: {fileID: 9028884949015110438}
 --- !u!1 &941748240404163429
 GameObject:
   m_ObjectHideFlags: 0
@@ -461,6 +462,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05fc15f753071814db1e0f6cf30904c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentPhase: 0
   playerHandUI: {fileID: 608739698132165998}
 --- !u!1 &3447986206801773725
 GameObject:

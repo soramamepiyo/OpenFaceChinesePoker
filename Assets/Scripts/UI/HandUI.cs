@@ -17,8 +17,10 @@ public class HandUI : MonoBehaviour
     [Header("決定ボタン")]
     public Button confirmButton;
 
+    [SerializeField] private HandManager handManager;
     private List<CardUI> allCardUIs = new List<CardUI>();
     private float spacing = 1.5f;
+
 
     public void RenderInitialHand(List<Card> dealtCards)
     {
@@ -39,23 +41,9 @@ public class HandUI : MonoBehaviour
 
     public void UpdateConfirmButtonState()
     {
-        int placedCount = 0;
-
-        foreach (var cardUI in allCardUIs)
-        {
-            // Unplaced にある → まだ配置されていない
-            if (cardUI.CurrentArea == AreaType.Unplaced)
-            {
-                confirmButton.interactable = false;
-                return;
-            }
-
-            // それ以外（Top / Middle / Bottom）は配置済み
-            placedCount++;
-        }
-
-        // 5枚すべて配置されていたら押せる
-        confirmButton.interactable = (placedCount == 5);
+        // 適切に配置されていたらOKボタンが押せる
+        confirmButton.interactable 
+            = CheckIsProperPlace(handManager.GetCurrentPhase());
     }
 
     public Sprite GetCardSprite(Card card)
@@ -125,5 +113,20 @@ public class HandUI : MonoBehaviour
             if (c != null) Destroy(c.gameObject);
         }
         allCardUIs.Clear();
+    }
+
+    /// <summary>
+    /// 確定できる配置かどうか
+    /// </summary>
+    public bool CheckIsProperPlace(PlacePhase phase)
+    {
+        List<Transform> cards = new List<Transform>();
+        foreach (Transform child in unplacedArea)
+        {
+            if (child.CompareTag("Card"))
+                cards.Add(child);
+        }
+        int num = cards.Count;
+        return num == ((phase == PlacePhase.First) ? 0: 1);
     }
 }
