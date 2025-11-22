@@ -70,13 +70,18 @@ public class HandManager : MonoBehaviour
         {
 
         }
-        else
-        {
-            playerHandUI.topArea.GetComponentInChildren<DropArea>().LockCards();
-            playerHandUI.middleArea.GetComponentInChildren<DropArea>().LockCards();
-            playerHandUI.bottomArea.GetComponentInChildren<DropArea>().LockCards();
-            currentPhase++;
-            DealCards();
-        }
+        else SetupNextPhase();
+    }
+
+    private void SetupNextPhase()
+    {
+        // 配置したカードをロック
+        playerHandUI.topArea.GetComponentInChildren<DropArea>().LockCards();
+        playerHandUI.middleArea.GetComponentInChildren<DropArea>().LockCards();
+        playerHandUI.bottomArea.GetComponentInChildren<DropArea>().LockCards();
+        playerHandUI.unplacedArea.GetComponentInChildren<DropArea>().ClearCards();
+
+        currentPhase++;
+        DealCards();
     }
 }
