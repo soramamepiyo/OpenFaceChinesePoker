@@ -1,5 +1,6 @@
 using Mono.Cecil;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
@@ -32,26 +33,26 @@ public class HandManager : MonoBehaviour
         // todo: 一旦CPUはコメントアウト
         // players.Add(new Player("CPU", true));
 
-        DealInitialCards();
-    }
-
-    private void DealInitialCards()
-    {
         foreach (var player in players)
         {
             // 手札情報（Top/Middle/Bottom）をリセット
             player.ResetHand();
-
-            // カードを新しく生成
-            List<Card> dealtCards = new List<Card>();
-            for (int i = 0; i < GetDrawCardsNum(currentPhase); i++)
-            {
-                dealtCards.Add(deck.Draw());
-            }
-        
-            // 配られたカードを UI の UnplacedArea に並べる
-            playerHandUI.RenderInitialHand(dealtCards);
         }
+
+        DealCards();
+    }
+
+    private void DealCards()
+    {
+        // カードを新しく生成
+        List<Card> dealtCards = new List<Card>();
+        for (int i = 0; i < GetDrawCardsNum(currentPhase); i++)
+        {
+            dealtCards.Add(deck.Draw());
+        }
+        
+        // 配られたカードを UI の UnplacedArea に並べる
+        playerHandUI.RenderHand(dealtCards);
     }
 
     public int GetDrawCardsNum(PlacePhase round)
@@ -60,4 +61,19 @@ public class HandManager : MonoBehaviour
     }
 
     public PlacePhase GetCurrentPhase() { return currentPhase; }
+
+    public void OnClickPlaceButton()
+    {
+        Debug.Log("End " + currentPhase);
+        playerHandUI.confirmButton.interactable = false;
+        if (currentPhase == PlacePhase.Fifth)
+        {
+
+        }
+        else
+        {
+            currentPhase++;
+            DealCards();
+        }
+    }
 }

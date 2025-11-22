@@ -22,10 +22,8 @@ public class HandUI : MonoBehaviour
     private float spacing = 1.5f;
 
 
-    public void RenderInitialHand(List<Card> dealtCards)
+    public void RenderHand(List<Card> dealtCards)
     {
-        ClearHand();
-
         foreach (var card in dealtCards)
         {
             GameObject go = Instantiate(cardPrefab, unplacedArea);
