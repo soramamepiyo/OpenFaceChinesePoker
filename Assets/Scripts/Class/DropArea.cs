@@ -32,7 +32,7 @@ public class DropArea : MonoBehaviour, IDropHandler
         // foreach ‚Ì’†‚Å Destroy ‚·‚é‚Æ–â‘è‚ª‹N‚«‚é‚½‚ß•ª‚¯‚é
         foreach (Transform t in toDelete)
         {
-            DestroyImmediate(t.gameObject);
+            Destroy(t.gameObject);
         }
     }
 

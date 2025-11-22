@@ -1,4 +1,5 @@
 using Mono.Cecil;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -70,16 +71,18 @@ public class HandManager : MonoBehaviour
         {
 
         }
-        else SetupNextPhase();
+        else StartCoroutine(SetupNextPhase());
     }
 
-    private void SetupNextPhase()
+    private IEnumerator SetupNextPhase()
     {
         // 配置したカードをロック
         playerHandUI.topArea.GetComponentInChildren<DropArea>().LockCards();
         playerHandUI.middleArea.GetComponentInChildren<DropArea>().LockCards();
         playerHandUI.bottomArea.GetComponentInChildren<DropArea>().LockCards();
         playerHandUI.unplacedArea.GetComponentInChildren<DropArea>().ClearCards();
+
+        yield return null;  // UnplacedAreaの残ったカードの破棄のために、1フレーム待機する(Destroy()が即時廃棄しない)
 
         currentPhase++;
         DealCards();
