@@ -13,6 +13,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 {
     public Card cardData;
     public AreaType CurrentArea = AreaType.Unplaced;
+    public bool isLocked; // 配置が確定して、もう動かせないか?
 
     [SerializeField] private Transform frontTransform;
     [SerializeField] private Transform backTransform;
@@ -32,6 +33,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     {
         this.cardData = card;
         this.handUI = handUI;
+        this.isLocked = false;
         originalPosition = transform.position;
 
         SetCardAppearance(card);
@@ -52,11 +54,13 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     #region Drag
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (isLocked) return;
         originalPosition = transform.position;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (isLocked) return;
         Vector3 worldPoint = Camera.main.ScreenToWorldPoint(eventData.position);
         worldPoint.z = 0;
         transform.position = worldPoint;
@@ -64,6 +68,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (isLocked) return;
         // カードを元に戻す初期位置
         transform.position = originalPosition;
 
