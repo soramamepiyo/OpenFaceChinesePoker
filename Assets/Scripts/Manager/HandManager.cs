@@ -72,6 +72,9 @@ public class HandManager : MonoBehaviour
         }
         else
         {
+            playerHandUI.topArea.GetComponentInChildren<DropArea>().LockCards();
+            playerHandUI.middleArea.GetComponentInChildren<DropArea>().LockCards();
+            playerHandUI.bottomArea.GetComponentInChildren<DropArea>().LockCards();
             currentPhase++;
             DealCards();
         }

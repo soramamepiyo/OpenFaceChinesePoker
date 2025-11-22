@@ -318,6 +318,5 @@ MonoBehaviour:
     suit: 0
     rank: 99
   CurrentArea: 0
-  isLocked: 0
   frontTransform: {fileID: 1612623528151777878}
   backTransform: {fileID: 7345762845082982614}

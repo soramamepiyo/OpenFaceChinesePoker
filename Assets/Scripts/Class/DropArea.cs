@@ -31,4 +31,16 @@ public class DropArea : MonoBehaviour, IDropHandler
         }
         return cardsNum < GetMaxAlignCards();
     }
+
+    public void LockCards()
+    {
+        foreach (Transform child in this.transform)
+        {
+            if (child.CompareTag("Card"))
+            {
+                CardUI cui = child.GetComponent<CardUI>();
+                cui.LockCardPlace();
+            }
+        }
+    }
 }

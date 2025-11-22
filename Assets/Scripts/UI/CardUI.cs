@@ -13,7 +13,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 {
     public Card cardData;
     public AreaType CurrentArea = AreaType.Unplaced;
-    public bool isLocked; // 配置が確定して、もう動かせないか?
+    private bool isLocked; // 配置が確定して、もう動かせないか?
 
     [SerializeField] private Transform frontTransform;
     [SerializeField] private Transform backTransform;
@@ -110,5 +110,11 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
         transform.SetAsLastSibling();
 
         transform.localPosition = Vector3.zero;
+    }
+
+    public void LockCardPlace()
+    {
+        isLocked = true;
+        frontRenderer.color = new Color(0.8f, 0.8f, 0.8f);
     }
 }
