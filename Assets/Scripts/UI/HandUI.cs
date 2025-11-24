@@ -86,8 +86,15 @@ public class HandUI : MonoBehaviour
         }
     }
 
+    public void ArrangeAlignUnplacedArea()
+    {
+        ArrangeAlignLeft(topArea, 3);
+        ArrangeAlignLeft(middleArea, 5);
+        ArrangeAlignLeft(bottomArea, 5);
+    }
+
     // ç∂ëµÇ¶
-    public void ArrangeAlignLeft(Transform area, int max_cards)
+    private void ArrangeAlignLeft(Transform area, int max_cards)
     {
         List<Transform> cards = new List<Transform>();
         foreach (Transform child in area)
