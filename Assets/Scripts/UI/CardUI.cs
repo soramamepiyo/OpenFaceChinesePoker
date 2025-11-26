@@ -89,7 +89,8 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
                 {
                     // エリアにカードを移動
                     SetArea(dropArea.areaType, dropArea.transform);
-                    handUI.ArrangeAlignUnplacedArea();
+                    if (dropArea.areaType == AreaType.Unplaced) handUI.ArrangeAlignUnplacedArea();
+                    handUI.ArrangeAlignPlacedArea();
                     handUI.UpdateConfirmButtonState();
                     return;
                 }

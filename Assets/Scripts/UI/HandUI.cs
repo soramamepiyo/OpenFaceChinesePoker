@@ -68,8 +68,20 @@ public class HandUI : MonoBehaviour
         }
     }
 
+    public void ArrangeAlignUnplacedArea()
+    {
+        ArrangeAlignCenter(unplacedArea);
+    }
+
+    public void ArrangeAlignPlacedArea()
+    {
+        ArrangeAlignLeft(topArea, 3);
+        ArrangeAlignLeft(middleArea, 5);
+        ArrangeAlignLeft(bottomArea, 5);
+    }
+
     // íÜâõëµÇ¶
-    public void ArrangeAlignCenter(Transform area)
+    private void ArrangeAlignCenter(Transform area)
     {
         List<Transform> cards = new List<Transform>();
         foreach (Transform child in area)
@@ -84,13 +96,6 @@ public class HandUI : MonoBehaviour
         {
             cards[i].localPosition = new Vector3(startX + spacing * i, 0, 0);
         }
-    }
-
-    public void ArrangeAlignUnplacedArea()
-    {
-        ArrangeAlignLeft(topArea, 3);
-        ArrangeAlignLeft(middleArea, 5);
-        ArrangeAlignLeft(bottomArea, 5);
     }
 
     // ç∂ëµÇ¶
