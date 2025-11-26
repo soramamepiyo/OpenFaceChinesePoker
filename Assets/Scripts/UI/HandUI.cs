@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class HandUI : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class HandUI : MonoBehaviour
     [SerializeField] private HandManager handManager;
     private List<CardUI> allCardUIs = new List<CardUI>();
     private float spacing = 1.5f;
+
+    private float MOVE_ANIM_SEC = 0.3f;
 
 
     public void RenderHand(List<Card> dealtCards)
@@ -94,7 +97,7 @@ public class HandUI : MonoBehaviour
         float startX = -spacing * (n - 1) / 2f;
         for (int i = 0; i < n; i++)
         {
-            cards[i].localPosition = new Vector3(startX + spacing * i, 0, 0);
+            cards[i].DOLocalMove(new Vector3(startX + spacing * i, 0, 0), MOVE_ANIM_SEC);
         }
     }
 
@@ -112,7 +115,7 @@ public class HandUI : MonoBehaviour
         float startX = -spacing * (max_cards - 1) / 2f;
         for (int i = 0; i < n; i++)
         {
-            cards[i].localPosition = new Vector3(startX + spacing * i, 0, 0);
+            cards[i].DOLocalMove(new Vector3(startX + spacing * i, 0, 0), MOVE_ANIM_SEC);
         }
     }
 

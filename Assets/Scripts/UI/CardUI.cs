@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 
 public enum AreaType
 {
@@ -22,6 +23,8 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     private HandUI handUI;
     private Vector3 originalPosition;
+
+    private float MOVE_ANIM_SEC = 0.3f;
 
     private void Awake()
     {
@@ -69,8 +72,6 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     public void OnEndDrag(PointerEventData eventData)
     {
         if (isLocked) return;
-        // カードを元に戻す初期位置
-        transform.position = originalPosition;
 
         // 画面座標をワールド座標に変換
         Vector3 worldPoint3D = Camera.main.ScreenToWorldPoint(eventData.position);
@@ -89,6 +90,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
                 {
                     // エリアにカードを移動
                     SetArea(dropArea.areaType, dropArea.transform);
+                    // 戻すときのみUnplacedAreaも整列する
                     if (dropArea.areaType == AreaType.Unplaced) handUI.ArrangeAlignUnplacedArea();
                     handUI.ArrangeAlignPlacedArea();
                     handUI.UpdateConfirmButtonState();
@@ -98,7 +100,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
         }
 
         // ここまで来たら DropArea にヒットせず、元に戻す
-        transform.position = originalPosition;
+        transform.DOMove(originalPosition, MOVE_ANIM_SEC);
     }
     #endregion
 
@@ -109,8 +111,6 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
         // 配置したカードは右端（最後）に来るようにする
         transform.SetAsLastSibling();
-
-        transform.localPosition = Vector3.zero;
     }
 
     public void LockCardPlace()
