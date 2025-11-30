@@ -46,40 +46,37 @@ public class HandEvaluator : MonoBehaviour
     private EvaluationResult Evaluate3Card(List<Card> cards)
     {
         var values = cards.Select(c => (int)c.rank).OrderByDescending(v => v).ToList();
+        
+        int threeKind = FindNKindValue(cards, 3);
+        List<int> pairs = FindPairs(cards);
 
-        bool isThree = IsNOfAKind(cards, 3);
-        bool isPair = IsNOfAKind(cards, 2);
-
-        if (isThree)
+        // Three of a Kind
+        if (threeKind > 0)
         {
-            return new EvaluationResult
-            {
-                Rank = HandRank.ThreeOfKind,
-                RankValue = 30,
-                Kickers = values
-            };
+            List<int> kickers = new List<int>(values);
+            kickers.RemoveAll(v => v == threeKind);
+            return new EvaluationResult { Rank = HandRank.ThreeOfKind, RankValue = 300 + threeKind, Kickers = kickers };
         }
 
-        if (isPair)
+        // One Pair
+        if (pairs.Count == 1)
         {
-            // ペアの値を先頭に、そのほかを kicker とする
-            int pairValue = FindPairValue(cards);
-            List<int> kickers = values;
-            kickers.Remove(pairValue);
+            int pairV = pairs[0];
+            List<int> kickers = values.Where(v => v != pairV).ToList();
 
             return new EvaluationResult
             {
                 Rank = HandRank.OnePair,
-                RankValue = 20,
-                Kickers = new List<int> { pairValue }.Concat(kickers).ToList()
+                RankValue = 100 + pairV,
+                Kickers = kickers
             };
         }
 
-        // ハイカード
+        // High Card
         return new EvaluationResult
         {
             Rank = HandRank.HighCard,
-            RankValue = 10,
+            RankValue = 0,
             Kickers = values
         };
     }

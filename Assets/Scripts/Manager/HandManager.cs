@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static HandEvaluator;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
 public enum PlacePhase
@@ -20,6 +21,8 @@ public class HandManager : MonoBehaviour
     private Deck deck;
     [SerializeField] private PlacePhase currentPhase;
     [SerializeField] private HandUI playerHandUI;
+    [SerializeField] private HandEvaluator evaluator;
+    [SerializeField] private OFCScoreCalculator scoreCalculator;
 
     public void Init(List<Player> gamePlayers)
     {
@@ -67,10 +70,7 @@ public class HandManager : MonoBehaviour
     {
         Debug.Log("End " + currentPhase);
         playerHandUI.confirmButton.interactable = false;
-        if (currentPhase == PlacePhase.Fifth)
-        {
-
-        }
+        if (currentPhase == PlacePhase.Fifth) DispResult();
         else StartCoroutine(SetupNextPhase());
     }
 
@@ -86,5 +86,19 @@ public class HandManager : MonoBehaviour
 
         currentPhase++;
         DealCards();
+    }
+
+    private void DispResult()
+    {
+        EvaluationResult top_result = evaluator.Evaluate(playerHandUI.topArea.GetComponentInChildren<DropArea>().GetCards());
+        EvaluationResult mid_result = evaluator.Evaluate(playerHandUI.middleArea.GetComponentInChildren<DropArea>().GetCards());
+        EvaluationResult btm_result = evaluator.Evaluate(playerHandUI.bottomArea.GetComponentInChildren<DropArea>().GetCards());
+        int top_point = scoreCalculator.GetAreaScore(top_result, AreaType.Top);
+        int mid_point = scoreCalculator.GetAreaScore(mid_result, AreaType.Middle);
+        int btm_point = scoreCalculator.GetAreaScore(btm_result, AreaType.Bottom);
+
+        Debug.Log("T: " + top_point);
+        Debug.Log("M: " + mid_point);
+        Debug.Log("B: " + btm_point);
     }
 }

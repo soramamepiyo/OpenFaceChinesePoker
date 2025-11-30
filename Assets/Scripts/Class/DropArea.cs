@@ -63,4 +63,17 @@ public class DropArea : MonoBehaviour, IDropHandler
             }
         }
     }
+
+    public List<Card> GetCards()
+    {
+        List <Card> ret = new List<Card>();
+        foreach (Transform child in this.transform)
+        {
+            if (child.CompareTag("Card"))
+            {
+                ret.Add(child.GetComponent<CardUI>().cardData);
+            }
+        }
+        return ret;
+    }
 }

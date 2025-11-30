@@ -558,6 +558,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2753319903845124544}
   - component: {fileID: 9028884949015110438}
+  - component: {fileID: 2058039160669586954}
+  - component: {fileID: 8727036512982589809}
   m_Layer: 0
   m_Name: HandManager
   m_TagString: Untagged
@@ -596,6 +598,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentPhase: 0
   playerHandUI: {fileID: 608739698132165998}
+  evaluator: {fileID: 2058039160669586954}
+  scoreCalculator: {fileID: 8727036512982589809}
+--- !u!114 &2058039160669586954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3289501398955967187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ee8cb432700b5d40a5553e8f13898b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8727036512982589809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3289501398955967187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a0bb93dcf8992a4a9c7a0bae94d18fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3447986206801773725
 GameObject:
   m_ObjectHideFlags: 0
