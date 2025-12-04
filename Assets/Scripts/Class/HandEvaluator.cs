@@ -19,17 +19,14 @@ public enum HandRank
 
 public class HandEvaluator : MonoBehaviour
 {
-    // 役判定結果をまとめて返すための構造体
+    // 役判定結果をまとめて返す構造体（元のまま）
     public struct EvaluationResult
     {
-        public HandRank Rank;   // 役
-        public int RankValue;   // 強さ（比較用）
-        public List<int> Kickers; // 同じ役同士での比較用
+        public HandRank Rank;
+        public int RankValue;
+        public List<int> Kickers;
     }
 
-    // ===========================
-    // ▼ 評価メイン関数
-    // ===========================
     public EvaluationResult Evaluate(List<Card> cards)
     {
         if (cards.Count == 3)
@@ -45,24 +42,50 @@ public class HandEvaluator : MonoBehaviour
     // ===========================
     private EvaluationResult Evaluate3Card(List<Card> cards)
     {
-        var values = cards.Select(c => (int)c.rank).OrderByDescending(v => v).ToList();
-        
+        var values = cards
+            .Where(c => c.suit != SuitType.Joker)
+            .Select(c => (int)c.rank)
+            .OrderByDescending(v => v)
+            .ToList();
+
+        int jokerCount = CountJokers(cards);
+
+        // Joker だけのケース
+        if (values.Count == 0)
+        {
+            return new EvaluationResult
+            {
+                Rank = HandRank.ThreeOfKind,
+                RankValue = 300 + 14,
+                Kickers = new List<int>()
+            };
+        }
+
         int threeKind = FindNKindValue(cards, 3);
         List<int> pairs = FindPairs(cards);
 
         // Three of a Kind
         if (threeKind > 0)
         {
-            List<int> kickers = new List<int>(values);
+            var kickers = new List<int>(values);
             kickers.RemoveAll(v => v == threeKind);
-            return new EvaluationResult { Rank = HandRank.ThreeOfKind, RankValue = 300 + threeKind, Kickers = kickers };
+
+            return new EvaluationResult
+            {
+                Rank = HandRank.ThreeOfKind,
+                RankValue = 300 + threeKind,
+                Kickers = kickers
+            };
         }
 
         // One Pair
         if (pairs.Count == 1)
         {
             int pairV = pairs[0];
-            List<int> kickers = values.Where(v => v != pairV).ToList();
+
+            List<int> kickers = values
+                .Where(v => v != pairV)
+                .ToList();
 
             return new EvaluationResult
             {
@@ -92,7 +115,22 @@ public class HandEvaluator : MonoBehaviour
         int threeKind = FindNKindValue(cards, 3);
         List<int> pairs = FindPairs(cards);
 
-        var values = cards.Select(c => (int)c.rank).OrderByDescending(v => v).ToList();
+        var values = GetNonJokerRanks(cards)
+            .OrderByDescending(v => v)
+            .ToList();
+
+        int jokerCount = CountJokers(cards);
+
+        // Joker だけの特殊ケース（5 Jokers）
+        if (values.Count == 0)
+        {
+            return new EvaluationResult
+            {
+                Rank = HandRank.RoyalFlush,
+                RankValue = 900,
+                Kickers = new List<int> { 14, 13, 12, 11, 10 }
+            };
+        }
 
         // Royal Flush
         if (isFlush && IsRoyal(cards))
@@ -107,17 +145,24 @@ public class HandEvaluator : MonoBehaviour
         {
             List<int> kickers = new List<int>(values);
             kickers.RemoveAll(v => v == fourKind);
-            return new EvaluationResult { Rank = HandRank.FourOfKind, RankValue = 700 + fourKind, Kickers = kickers };
+
+            return new EvaluationResult
+            {
+                Rank = HandRank.FourOfKind,
+                RankValue = 700 + fourKind,
+                Kickers = kickers
+            };
         }
 
         // Full House
-        if (threeKind > 0 && pairs.Count >= 1)
+        var fh = FindFullHouse(cards);
+        if (fh.threeRank > 0 && fh.pairRank > 0)
         {
             return new EvaluationResult
             {
                 Rank = HandRank.FullHouse,
-                RankValue = 600 + threeKind,
-                Kickers = new List<int> { pairs.Max() }
+                RankValue = 600 + fh.threeRank,
+                Kickers = new List<int> { fh.pairRank }
             };
         }
 
@@ -134,7 +179,13 @@ public class HandEvaluator : MonoBehaviour
         {
             List<int> kickers = new List<int>(values);
             kickers.RemoveAll(v => v == threeKind);
-            return new EvaluationResult { Rank = HandRank.ThreeOfKind, RankValue = 300 + threeKind, Kickers = kickers };
+
+            return new EvaluationResult
+            {
+                Rank = HandRank.ThreeOfKind,
+                RankValue = 300 + threeKind,
+                Kickers = kickers
+            };
         }
 
         // Two Pair
@@ -142,7 +193,11 @@ public class HandEvaluator : MonoBehaviour
         {
             int highPair = pairs.Max();
             int lowPair = pairs.Min();
-            int kicker = values.Where(v => v != highPair && v != lowPair).Max();
+
+            int kicker = values
+                .Where(v => v != highPair && v != lowPair)
+                .DefaultIfEmpty(0)
+                .Max();
 
             return new EvaluationResult
             {
@@ -156,6 +211,7 @@ public class HandEvaluator : MonoBehaviour
         if (pairs.Count == 1)
         {
             int pairV = pairs[0];
+
             List<int> kickers = values.Where(v => v != pairV).ToList();
 
             return new EvaluationResult
@@ -176,44 +232,189 @@ public class HandEvaluator : MonoBehaviour
     }
 
     // ===========================
-    // ▼ 基本的な補助関数
+    // ▼ Joker util
+    // ===========================
+    private int CountJokers(List<Card> cards)
+        => cards.Count(c => c.suit == SuitType.Joker);
+
+    private List<int> GetNonJokerRanks(List<Card> cards)
+        => cards.Where(c => c.suit != SuitType.Joker)
+                .Select(c => (int)c.rank)
+                .ToList();
+
+    // ===========================
+    // ▼ フラッシュ（Joker 対応）
     // ===========================
     private bool IsFlush(List<Card> cards)
-        => cards.Select(c => c.suit).Distinct().Count() == 1;
+    {
+        var suits = cards.Where(c => c.suit != SuitType.Joker)
+                         .Select(c => c.suit)
+                         .Distinct()
+                         .ToList();
 
+        if (suits.Count == 0) return true;
+        if (suits.Count == 1) return true;
+
+        return false;
+    }
+
+    // ===========================
+    // ▼ ストレート（Joker 対応）
+    // ===========================
     private bool IsStraight(List<Card> cards)
     {
-        var sorted = cards.Select(c => (int)c.rank).Distinct().OrderBy(v => v).ToList();
-        if (sorted.Count != 5) return false;
+        int joker = CountJokers(cards);
+
+        var r = GetNonJokerRanks(cards)
+            .Distinct()
+            .OrderBy(v => v)
+            .ToList();
 
         // A2345
-        if (sorted.SequenceEqual(new List<int> { 2, 3, 4, 5, 14 })) return true;
+        bool CheckLowAce()
+        {
+            var need = new List<int> { 2, 3, 4, 5, 14 };
+            int miss = need.Count(v => !r.Contains(v));
+            return miss <= joker;
+        }
+        if (CheckLowAce()) return true;
 
-        return sorted.Last() - sorted.First() == 4;
+        for (int start = 1; start <= 10; start++)
+        {
+            var need = Enumerable.Range(start, 5).ToList();
+            int miss = need.Count(v => !r.Contains(v));
+            if (miss <= joker) return true;
+        }
+        return false;
     }
 
+    // ===========================
+    // ▼ フルハウス（Joker 対応）
+    // ===========================
+    // Joker を含めて FullHouse (3 + 2) が作れるか探索し、作れるなら (threeRank, pairRank) を返す。
+    // 見つからなければ (0,0) を返す。
+    private (int threeRank, int pairRank) FindFullHouse(List<Card> cards)
+    {
+        int jokerCount = CountJokers(cards);
+
+        // グループ情報（非Jokerのみ）
+        var groups = cards
+            .Where(c => c.suit != SuitType.Joker)
+            .GroupBy(c => c.rank)
+            .Select(g => new { Rank = (int)g.Key, Count = g.Count() })
+            .ToList();
+
+        // すべての候補ランクを上位から試す（強い方を優先）
+        // 2..14 を対象（Ace=14）
+        for (int three = 14; three >= 2; three--)
+        {
+            int countThree = groups.FirstOrDefault(g => g.Rank == three)?.Count ?? 0;
+            int needForThree = Math.Max(0, 3 - countThree);
+            if (needForThree > jokerCount) continue;
+
+            int remJoker = jokerCount - needForThree;
+
+            // ペアの候補は three と同じでないランクを試す（強い方優先）
+            for (int pair = 14; pair >= 2; pair--)
+            {
+                if (pair == three) continue;
+
+                int countPair = groups.FirstOrDefault(g => g.Rank == pair)?.Count ?? 0;
+                int needForPair = Math.Max(0, 2 - countPair);
+
+                if (needForPair <= remJoker)
+                {
+                    // 成立
+                    return (three, pair);
+                }
+            }
+
+            // 特殊ケース：ペアを Joker だけで作る（ペアランクを最強の Ace(14) とする）
+            if (remJoker >= 2)
+            {
+                return (three, 14);
+            }
+        }
+
+        // 可能性として「3枚を Joker だけで作る」ケースも試す（groups.Count==0 handled below）
+        // 例えば groups empty and jokerCount >=3 -> threeRank = 14, need pair from remaining jokers
+        if (groups.Count == 0 && jokerCount >= 5)
+        {
+            // 5 Jokers -> treat as Royal-ish but FullHouse not meaningful; keep safe fallback
+            return (14, 14);
+        }
+
+        // 最後に「非既存ランクで3枚・2枚を作る」ケース（ほぼ covered above by testing ranks 14..2）
+        return (0, 0);
+    }
+
+
+    // ===========================
+    // ▼ ロイヤル（Joker 対応）
+    // ===========================
     private bool IsRoyal(List<Card> cards)
     {
-        var set = cards.Select(c => (int)c.rank).OrderBy(v => v).ToList();
-        return set.SequenceEqual(new List<int> { 10, 11, 12, 13, 14 });
+        int joker = CountJokers(cards);
+        var r = GetNonJokerRanks(cards);
+
+        var need = new List<int> { 10, 11, 12, 13, 14 };
+        int miss = need.Count(v => !r.Contains(v));
+
+        return miss <= joker;
     }
 
-    private bool IsNOfAKind(List<Card> cards, int n)
-        => cards.GroupBy(c => c.rank).Any(g => g.Count() == n);
-
+    // ===========================
+    // ▼ NKind（Joker 対応）
+    // ===========================
     private int FindNKindValue(List<Card> cards, int n)
-        => cards.GroupBy(c => c.rank)
-               .Where(g => g.Count() == n)
-               .Select(g => (int)g.Key)
-               .DefaultIfEmpty(0)
-               .Max();
+    {
+        int jokerCount = CountJokers(cards);
 
-    private int FindPairValue(List<Card> cards)
-        => FindNKindValue(cards, 2);
+        var groups = cards.Where(c => c.suit != SuitType.Joker)
+            .GroupBy(c => c.rank)
+            .Select(g => new { Rank = (int)g.Key, Count = g.Count() })
+            .OrderByDescending(g => g.Count)
+            .ThenByDescending(g => g.Rank)
+            .ToList();
+
+        foreach (var g in groups)
+        {
+            if (g.Count + jokerCount >= n)
+                return g.Rank;
+        }
+
+        if (groups.Count == 0 && jokerCount >= n)
+            return 14;
+
+        return 0;
+    }
 
     private List<int> FindPairs(List<Card> cards)
-        => cards.GroupBy(c => c.rank)
-                .Where(g => g.Count() == 2)
-                .Select(g => (int)g.Key)
-                .ToList();
+    {
+        int jokerCount = CountJokers(cards);
+
+        var groups = cards.Where(c => c.suit != SuitType.Joker)
+            .GroupBy(c => c.rank)
+            .Select(g => new { Rank = (int)g.Key, Count = g.Count() })
+            .OrderByDescending(g => g.Rank)
+            .ToList();
+
+        List<int> pairs = new List<int>();
+
+        foreach (var g in groups)
+        {
+            if (g.Count >= 2)
+                pairs.Add(g.Rank);
+            else if (g.Count == 1 && jokerCount > 0)
+            {
+                pairs.Add(g.Rank);
+                jokerCount--;
+            }
+        }
+
+        if (jokerCount >= 2)
+            pairs.Add(14);
+
+        return pairs;
+    }
 }
