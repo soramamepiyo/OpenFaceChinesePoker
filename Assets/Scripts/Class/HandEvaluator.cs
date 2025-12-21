@@ -30,20 +30,81 @@ public class HandEvaluator : MonoBehaviour
     // ===========================
     // ▼ 評価メイン関数
     // ===========================
-    public EvaluationResult Evaluate(List<Card> cards)
+    public Dictionary<AreaType, EvaluationResult> Evaluate(Dictionary<AreaType, List<Card>> cards)
     {
-        if (cards.Count == 3)
-            return Evaluate3Card(cards);
-        if (cards.Count == 5)
-            return Evaluate5Card(cards);
+        Dictionary<AreaType, EvaluationResult> ret = new Dictionary<AreaType, EvaluationResult>();
 
-        throw new ArgumentException("Hand must be 3 or 5 cards.");
+        // Topから計算
+        if (cards[AreaType.Top].Count == 3)  ret.Add(AreaType.Top, EvaluateWithJoker(cards[AreaType.Top], true));
+        else throw new ArgumentException("Top Hand must be 3 cards.");
+
+        // Middle 
+        if(cards[AreaType.Middle].Count == 5)  ret.Add(AreaType.Middle, EvaluateWithJoker(cards[AreaType.Middle], false));
+        else throw new ArgumentException("Middle Hand must be 5 cards.");
+
+        // Bottom 
+        if (cards[AreaType.Bottom].Count == 5) ret.Add(AreaType.Bottom, EvaluateWithJoker(cards[AreaType.Bottom], false));
+        else throw new ArgumentException("Bottom Hand must be 5 cards.");
+
+        return ret;
+    }
+
+    private EvaluationResult EvaluateWithJoker(List<Card> cards, bool is_top)
+    {
+        int jokerCount = cards.Count(c => c.suit == SuitType.Joker);
+
+        // Jokerがなければ既存ロジック
+        if (jokerCount == 0)
+            return is_top ? Evaluate3CardNoJoker(cards) : Evaluate5CardNoJoker(cards);
+
+        var fixedCards = cards
+            .Where(c => c.suit != SuitType.Joker)
+            .ToList();
+
+        EvaluationResult? best = null;
+
+        var allCandidates = GenerateAllPossibleCards();
+
+        if (jokerCount == 1)
+        {
+            foreach (var c1 in allCandidates)
+            {
+                if (ContainsSameCard(fixedCards, c1)) continue;
+
+                var testHand = new List<Card>(fixedCards) { c1 };
+                var result = is_top ? Evaluate3CardNoJoker(cards) : Evaluate5CardNoJoker(cards);
+
+                if (best == null || IsBetter(result, best.Value))
+                    best = result;
+            }
+        }
+        else if (jokerCount == 2)
+        {
+            foreach (var c1 in allCandidates)
+            {
+                if (ContainsSameCard(fixedCards, c1)) continue;
+
+                foreach (var c2 in allCandidates)
+                {
+                    if (IsSameCard(c1, c2)) continue;
+                    if (ContainsSameCard(fixedCards, c2)) continue;
+
+                    var testHand = new List<Card>(fixedCards) { c1, c2 };
+                    var result = is_top ? Evaluate3CardNoJoker(cards) : Evaluate5CardNoJoker(cards);
+
+                    if (best == null || IsBetter(result, best.Value))
+                        best = result;
+                }
+            }
+        }
+
+        return best ?? (is_top ? Evaluate3CardNoJoker(cards) : Evaluate5CardNoJoker(cards));
     }
 
     // ===========================
     // ▼ 3枚の役判定（Top）
     // ===========================
-    private EvaluationResult Evaluate3Card(List<Card> cards)
+    private EvaluationResult Evaluate3CardNoJoker(List<Card> cards)
     {
         var values = cards.Select(c => (int)c.rank).OrderByDescending(v => v).ToList();
         
@@ -84,7 +145,7 @@ public class HandEvaluator : MonoBehaviour
     // ===========================
     // ▼ 5枚の役判定（Middle / Bottom）
     // ===========================
-    private EvaluationResult Evaluate5Card(List<Card> cards)
+    private EvaluationResult Evaluate5CardNoJoker(List<Card> cards)
     {
         bool isFlush = IsFlush(cards);
         bool isStraight = IsStraight(cards);
@@ -216,4 +277,52 @@ public class HandEvaluator : MonoBehaviour
                 .Where(g => g.Count() == 2)
                 .Select(g => (int)g.Key)
                 .ToList();
+
+    // ===========================
+    // Joker util
+    // ===========================
+    private int CountJokers(List<Card> cards)
+        => cards.Count(c => c.suit == SuitType.Joker);
+
+    private List<Card> GenerateAllPossibleCards()
+    {
+        var list = new List<Card>();
+
+        foreach (SuitType suit in Enum.GetValues(typeof(SuitType)))
+        {
+            if (suit == SuitType.Joker) continue;
+
+            foreach (RankType rank in Enum.GetValues(typeof(RankType)))
+            {
+                if (rank == RankType.Joker) continue;
+
+                list.Add(new Card(suit, rank));
+            }
+        }
+
+        return list;
+    }
+    private bool ContainsSameCard(List<Card> cards, Card target)
+    {
+        return cards.Any(c => IsSameCard(c, target));
+    }
+
+    private bool IsSameCard(Card a, Card b)
+    {
+        return a.suit == b.suit && a.rank == b.rank;
+    }
+
+    private bool IsBetter(EvaluationResult a, EvaluationResult b)
+    {
+        if (a.RankValue != b.RankValue)
+            return a.RankValue > b.RankValue;
+
+        for (int i = 0; i < Mathf.Min(a.Kickers.Count, b.Kickers.Count); i++)
+        {
+            if (a.Kickers[i] != b.Kickers[i])
+                return a.Kickers[i] > b.Kickers[i];
+        }
+
+        return false;
+    }
 }

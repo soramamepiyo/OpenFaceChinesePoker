@@ -90,12 +90,15 @@ public class HandManager : MonoBehaviour
 
     private void DispResult()
     {
-        EvaluationResult top_result = evaluator.Evaluate(playerHandUI.topArea.GetComponentInChildren<DropArea>().GetCards());
-        EvaluationResult mid_result = evaluator.Evaluate(playerHandUI.middleArea.GetComponentInChildren<DropArea>().GetCards());
-        EvaluationResult btm_result = evaluator.Evaluate(playerHandUI.bottomArea.GetComponentInChildren<DropArea>().GetCards());
-        int top_point = scoreCalculator.GetAreaScore(top_result, AreaType.Top);
-        int mid_point = scoreCalculator.GetAreaScore(mid_result, AreaType.Middle);
-        int btm_point = scoreCalculator.GetAreaScore(btm_result, AreaType.Bottom);
+        Dictionary<AreaType, List<Card>> placed_cards = new Dictionary<AreaType, List<Card>>();
+        placed_cards.Add(AreaType.Top,    playerHandUI.topArea.GetComponentInChildren<DropArea>().GetCards());
+        placed_cards.Add(AreaType.Middle, playerHandUI.middleArea.GetComponentInChildren<DropArea>().GetCards());
+        placed_cards.Add(AreaType.Bottom, playerHandUI.bottomArea.GetComponentInChildren<DropArea>().GetCards());
+        
+        Dictionary<AreaType, EvaluationResult> result = evaluator.Evaluate(placed_cards);
+        int top_point = scoreCalculator.GetAreaScore(result[AreaType.Top],    AreaType.Top);
+        int mid_point = scoreCalculator.GetAreaScore(result[AreaType.Middle], AreaType.Middle);
+        int btm_point = scoreCalculator.GetAreaScore(result[AreaType.Bottom], AreaType.Bottom);
 
         Debug.Log("T: " + top_point);
         Debug.Log("M: " + mid_point);
