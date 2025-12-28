@@ -72,7 +72,7 @@ public class HandEvaluator : MonoBehaviour
                 if (ContainsSameCard(fixedCards, c1)) continue;
 
                 var testHand = new List<Card>(fixedCards) { c1 };
-                var result = is_top ? Evaluate3CardNoJoker(cards) : Evaluate5CardNoJoker(cards);
+                var result = is_top ? Evaluate3CardNoJoker(testHand) : Evaluate5CardNoJoker(testHand);
 
                 if (best == null || IsBetter(result, best.Value))
                     best = result;
@@ -90,7 +90,7 @@ public class HandEvaluator : MonoBehaviour
                     if (ContainsSameCard(fixedCards, c2)) continue;
 
                     var testHand = new List<Card>(fixedCards) { c1, c2 };
-                    var result = is_top ? Evaluate3CardNoJoker(cards) : Evaluate5CardNoJoker(cards);
+                    var result = is_top ? Evaluate3CardNoJoker(testHand) : Evaluate5CardNoJoker(testHand);
 
                     if (best == null || IsBetter(result, best.Value))
                         best = result;
