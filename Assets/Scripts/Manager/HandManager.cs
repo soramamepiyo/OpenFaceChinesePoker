@@ -23,6 +23,7 @@ public class HandManager : MonoBehaviour
     [SerializeField] private HandUI playerHandUI;
     [SerializeField] private HandEvaluator evaluator;
     [SerializeField] private OFCScoreCalculator scoreCalculator;
+    [SerializeField] private GameObject resultPanel;
 
     public void Init(List<Player> gamePlayers)
     {
@@ -31,6 +32,7 @@ public class HandManager : MonoBehaviour
         players = gamePlayers;
         deck = new Deck();
         currentPhase = PlacePhase.First;
+        resultPanel.SetActive(false);
 
         players.Clear();
         players.Add(new Player("Player"));
@@ -90,6 +92,9 @@ public class HandManager : MonoBehaviour
 
     private void DispResult()
     {
+        resultPanel.SetActive(true);
+        ResultPanelUI rp_ui = resultPanel.GetComponent<ResultPanelUI>();
+       
         Dictionary<AreaType, List<Card>> placed_cards = new Dictionary<AreaType, List<Card>>();
         placed_cards.Add(AreaType.Top,    playerHandUI.topArea.GetComponentInChildren<DropArea>().GetCards());
         placed_cards.Add(AreaType.Middle, playerHandUI.middleArea.GetComponentInChildren<DropArea>().GetCards());
@@ -103,5 +108,9 @@ public class HandManager : MonoBehaviour
         Debug.Log("T: " + top_point);
         Debug.Log("M: " + mid_point);
         Debug.Log("B: " + btm_point);
+
+        rp_ui.SetCards(placed_cards[AreaType.Top], placed_cards[AreaType.Middle], placed_cards[AreaType.Bottom]);
+        rp_ui.SetText(result[AreaType.Top], result[AreaType.Middle], result[AreaType.Bottom], 
+            top_point, mid_point, btm_point);
     }
 }
