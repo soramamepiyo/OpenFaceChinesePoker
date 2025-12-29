@@ -7,8 +7,8 @@ public class Deck
     // ============================================
     // DEBUG MENU
     // ============================================
-    bool DBG_ENABLE = true;
-    bool DBG_SHUFFLE = true;
+    public bool DBG_ENABLE = true;
+    bool DBG_SHUFFLE = false;
     // ============================================
 
     private List<Card> cards = new List<Card>();
