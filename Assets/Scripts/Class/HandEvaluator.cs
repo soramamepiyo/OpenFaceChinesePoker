@@ -34,28 +34,40 @@ public class HandEvaluator : MonoBehaviour
     {
         Dictionary<AreaType, EvaluationResult> ret = new Dictionary<AreaType, EvaluationResult>();
 
-        // Topから計算
-        if (cards[AreaType.Top].Count == 3)  ret.Add(AreaType.Top, EvaluateWithJoker(cards[AreaType.Top], true));
-        else throw new ArgumentException("Top Hand must be 3 cards.");
+        EvaluationResult boarder_er = new EvaluationResult();
+
+        // Bottom から計算(バーストしないようにJOKERで調整する都合)
+        if (cards[AreaType.Bottom].Count == 5) 
+        {
+            EvaluationResult er = EvaluateWithJoker(cards[AreaType.Bottom], AreaType.Bottom, boarder_er);
+            ret.Add(AreaType.Bottom, er);
+            boarder_er = er;
+        }
+        else throw new ArgumentException("Bottom Hand must be 5 cards.");
 
         // Middle 
-        if(cards[AreaType.Middle].Count == 5)  ret.Add(AreaType.Middle, EvaluateWithJoker(cards[AreaType.Middle], false));
+        if (cards[AreaType.Middle].Count == 5)
+        {
+            EvaluationResult er = EvaluateWithJoker(cards[AreaType.Middle], AreaType.Middle, boarder_er);
+            ret.Add(AreaType.Middle, er);
+            boarder_er = er;
+        }
         else throw new ArgumentException("Middle Hand must be 5 cards.");
 
-        // Bottom 
-        if (cards[AreaType.Bottom].Count == 5) ret.Add(AreaType.Bottom, EvaluateWithJoker(cards[AreaType.Bottom], false));
-        else throw new ArgumentException("Bottom Hand must be 5 cards.");
+        // Topから計算
+        if (cards[AreaType.Top].Count == 3)  ret.Add(AreaType.Top, EvaluateWithJoker(cards[AreaType.Top], AreaType.Top, boarder_er));
+        else throw new ArgumentException("Top Hand must be 3 cards.");
 
         return ret;
     }
 
-    private EvaluationResult EvaluateWithJoker(List<Card> cards, bool is_top)
+    private EvaluationResult EvaluateWithJoker(List<Card> cards, AreaType area, EvaluationResult boarder)
     {
         int jokerCount = cards.Count(c => c.suit == SuitType.Joker);
 
         // Jokerがなければ既存ロジック
         if (jokerCount == 0)
-            return is_top ? Evaluate3CardNoJoker(cards) : Evaluate5CardNoJoker(cards);
+            return (area == AreaType.Top) ? Evaluate3CardNoJoker(cards) : Evaluate5CardNoJoker(cards);
 
         var fixedCards = cards
             .Where(c => c.suit != SuitType.Joker)
@@ -72,8 +84,9 @@ public class HandEvaluator : MonoBehaviour
                 if (ContainsSameCard(fixedCards, c1)) continue;
 
                 var testHand = new List<Card>(fixedCards) { c1 };
-                var result = is_top ? Evaluate3CardNoJoker(testHand) : Evaluate5CardNoJoker(testHand);
+                var result = (area == AreaType.Top) ? Evaluate3CardNoJoker(testHand) : Evaluate5CardNoJoker(testHand);
 
+                if ((area != AreaType.Bottom) && IsBetter(result, boarder)) continue;
                 if (best == null || IsBetter(result, best.Value))
                     best = result;
             }
@@ -90,15 +103,16 @@ public class HandEvaluator : MonoBehaviour
                     if (ContainsSameCard(fixedCards, c2)) continue;
 
                     var testHand = new List<Card>(fixedCards) { c1, c2 };
-                    var result = is_top ? Evaluate3CardNoJoker(testHand) : Evaluate5CardNoJoker(testHand);
+                    var result = (area == AreaType.Top) ? Evaluate3CardNoJoker(testHand) : Evaluate5CardNoJoker(testHand);
 
+                    if ((area != AreaType.Bottom) && IsBetter(result, boarder)) continue;
                     if (best == null || IsBetter(result, best.Value))
                         best = result;
                 }
             }
         }
 
-        return best ?? (is_top ? Evaluate3CardNoJoker(cards) : Evaluate5CardNoJoker(cards));
+        return best ?? ((area == AreaType.Top) ? Evaluate3CardNoJoker(cards) : Evaluate5CardNoJoker(cards));
     }
 
     // ===========================
