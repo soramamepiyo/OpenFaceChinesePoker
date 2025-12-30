@@ -21,6 +21,7 @@ public class HandManager : MonoBehaviour
     private Deck deck;
     [SerializeField] private PlacePhase currentPhase;
     [SerializeField] private HandUI playerHandUI;
+    [SerializeField] private HandUI enemyHandUI;
     [SerializeField] private HandEvaluator evaluator;
     [SerializeField] private OFCScoreCalculator scoreCalculator;
     [SerializeField] private GameObject resultPanel;
@@ -36,8 +37,7 @@ public class HandManager : MonoBehaviour
 
         players.Clear();
         players.Add(new Player("Player"));
-        // todo: 一旦CPUはコメントアウト
-        // players.Add(new Player("CPU", true));
+        players.Add(new Player("CPU", true));
 
         foreach (var player in players)
         {
@@ -51,14 +51,21 @@ public class HandManager : MonoBehaviour
     private void DealCards()
     {
         // カードを新しく生成
-        List<Card> dealtCards = new List<Card>();
+        List<Card> playerDealtCards = new List<Card>();
         for (int i = 0; i < GetDrawCardsNum(currentPhase); i++)
         {
-            dealtCards.Add(deck.Draw());
+            playerDealtCards.Add(deck.Draw());
         }
-        
         // 配られたカードを UI の UnplacedArea に並べる
-        playerHandUI.RenderHand(dealtCards);
+        playerHandUI.RenderHand(playerDealtCards);
+
+        // 同じ処理の繰り返し(Enemy)
+        List<Card> enemyDealtCards = new List<Card>();
+        for (int i = 0; i < GetDrawCardsNum(currentPhase); i++)
+        {
+            enemyDealtCards.Add(deck.Draw());
+        }
+        enemyHandUI.RenderHand(enemyDealtCards);
     }
 
     public int GetDrawCardsNum(PlacePhase round)
