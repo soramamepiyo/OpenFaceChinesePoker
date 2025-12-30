@@ -23,7 +23,7 @@ public class HandManager : MonoBehaviour
     [SerializeField] private int firstPlayerIndex;   // 0 or 1
     [SerializeField] private int currentPlayerIndex;   // 0 or 1
     [SerializeField] private HandUI playerHandUI;
-    [SerializeField] private HandUI enemyHandUI;
+    [SerializeField] public HandUI enemyHandUI;
     [SerializeField] private HandEvaluator evaluator;
     [SerializeField] private OFCScoreCalculator scoreCalculator;
     [SerializeField] private OFCCpu ofcCpu;

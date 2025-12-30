@@ -144,4 +144,23 @@ public class HandUI : MonoBehaviour
         int num = cards.Count;
         return num == ((phase == PlacePhase.First) ? 0: 1);
     }
+
+    public DropArea GetDropArea(AreaType area)
+    {
+        switch (area)
+        {
+            case AreaType.Top:
+                return topArea.GetComponent<DropArea>();
+            case AreaType.Middle:
+                return middleArea.GetComponent<DropArea>();
+            case AreaType.Bottom:
+                return bottomArea.GetComponent<DropArea>();
+            case AreaType.Unplaced:
+                return unplacedArea.GetComponent<DropArea>();
+            default:
+                Debug.LogError("Unknown Area:" +  area);
+                break;
+        }
+        return null;
+    }
 }
