@@ -320,6 +320,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75a6e4485890d7f469fa9e69e51976ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsPlayerHandUI: 1
   unplacedArea: {fileID: 8700342835073799038}
   topArea: {fileID: 6299955197668021129}
   middleArea: {fileID: 5367698483421234906}
@@ -1320,6 +1321,7 @@ GameObject:
   - component: {fileID: 9028884949015110438}
   - component: {fileID: 2058039160669586954}
   - component: {fileID: 8727036512982589809}
+  - component: {fileID: 1021369256392882925}
   m_Layer: 0
   m_Name: HandManager
   m_TagString: Untagged
@@ -1359,10 +1361,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentPhase: 0
+  firstPlayerIndex: 0
+  currentPlayerIndex: 0
   playerHandUI: {fileID: 608739698132165998}
   enemyHandUI: {fileID: 1105695259384272259}
   evaluator: {fileID: 2058039160669586954}
   scoreCalculator: {fileID: 8727036512982589809}
+  ofcCpu: {fileID: 1021369256392882925}
   resultPanel: {fileID: 6794535458193908373}
 --- !u!114 &2058039160669586954
 MonoBehaviour:
@@ -1386,6 +1391,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a0bb93dcf8992a4a9c7a0bae94d18fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1021369256392882925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3289501398955967187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782f6cfad4cef3a42a1bac923c8997f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &3447986206801773725
@@ -2872,6 +2889,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75a6e4485890d7f469fa9e69e51976ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsPlayerHandUI: 0
   unplacedArea: {fileID: 6444497038692643244}
   topArea: {fileID: 110283911524700636}
   middleArea: {fileID: 8317417735025415578}

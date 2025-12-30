@@ -6,6 +6,8 @@ using DG.Tweening;
 
 public class HandUI : MonoBehaviour
 {
+    public bool IsPlayerHandUI;
+
     [Header("カードエリア")]
     public Transform unplacedArea;
     public Transform topArea;

@@ -20,20 +20,27 @@ public class HandManager : MonoBehaviour
     private List<Player> players;
     private Deck deck;
     [SerializeField] private PlacePhase currentPhase;
+    [SerializeField] private int firstPlayerIndex;   // 0 or 1
+    [SerializeField] private int currentPlayerIndex;   // 0 or 1
     [SerializeField] private HandUI playerHandUI;
     [SerializeField] private HandUI enemyHandUI;
     [SerializeField] private HandEvaluator evaluator;
     [SerializeField] private OFCScoreCalculator scoreCalculator;
+    [SerializeField] private OFCCpu ofcCpu;
     [SerializeField] private GameObject resultPanel;
 
-    public void Init(List<Player> gamePlayers)
+    public void Init(List<Player> gamePlayers, bool isEnemyFirst)
     {
         Debug.Log("Starting Open Face Chinese Poker...");
+
+        firstPlayerIndex = isEnemyFirst ? 1 : 0;
+        currentPlayerIndex = firstPlayerIndex;
 
         players = gamePlayers;
         deck = new Deck();
         currentPhase = PlacePhase.First;
         resultPanel.SetActive(false);
+        playerHandUI.confirmButton.interactable = false;
 
         players.Clear();
         players.Add(new Player("Player"));
@@ -45,7 +52,7 @@ public class HandManager : MonoBehaviour
             player.ResetHand();
         }
 
-        DealCards();
+        startPhase();
     }
 
     private void DealCards()
@@ -77,10 +84,47 @@ public class HandManager : MonoBehaviour
 
     public void OnClickPlaceButton()
     {
-        Debug.Log("End " + currentPhase);
         playerHandUI.confirmButton.interactable = false;
-        if (currentPhase == PlacePhase.Fifth) DispResult();
-        else StartCoroutine(SetupNextPhase());
+        EndPhase();
+    }
+
+    private void startPhase()
+    {
+        DealCards();
+
+        if (currentPlayerIndex == 0) startPlayerTurn();
+    }
+
+    private void startPlayerTurn()
+    {
+        playerHandUI.confirmButton.interactable = true;
+    }
+
+    public void EndPhase()
+    {
+        Debug.Log("End " + currentPhase);
+
+        // 手番交代？フェーズ終了？
+        if (currentPlayerIndex == firstPlayerIndex)
+        {
+            // 手番交代
+            if (currentPlayerIndex == 0)
+            {
+                currentPlayerIndex = 1;
+                StartCoroutine(ofcCpu.ActionCpu(this));
+            }
+            else
+            {
+                currentPlayerIndex = 0;
+                // プレイヤーを操作可能に
+                startPlayerTurn();
+            }
+        }
+        else
+        {
+            if (currentPhase == PlacePhase.Fifth) DispResult();
+            else StartCoroutine(SetupNextPhase());
+        }
     }
 
     private IEnumerator SetupNextPhase()
@@ -94,7 +138,7 @@ public class HandManager : MonoBehaviour
         yield return null;  // UnplacedAreaの残ったカードの破棄のために、1フレーム待機する(Destroy()が即時廃棄しない)
 
         currentPhase++;
-        DealCards();
+        startPhase();
     }
 
     private void DispResult()

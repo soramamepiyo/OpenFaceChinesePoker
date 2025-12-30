@@ -19,6 +19,6 @@ public class GameManager : MonoBehaviour
     void SetupHand()
     {
         handManager = Instantiate(handManagerPrefab);
-        handManager.Init(players);
+        handManager.Init(players, false); // todo
     }
 }

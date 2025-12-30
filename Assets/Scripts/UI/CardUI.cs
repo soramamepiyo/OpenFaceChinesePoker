@@ -57,13 +57,13 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     #region Drag
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (isLocked) return;
+        if (isLocked || !handUI.IsPlayerHandUI) return;
         originalPosition = transform.position;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (isLocked) return;
+        if (isLocked || !handUI.IsPlayerHandUI) return;
         Vector3 worldPoint = Camera.main.ScreenToWorldPoint(eventData.position);
         worldPoint.z = 0;
         transform.position = worldPoint;
@@ -71,7 +71,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (isLocked) return;
+        if (isLocked || !handUI.IsPlayerHandUI) return;
 
         // 画面座標をワールド座標に変換
         Vector3 worldPoint3D = Camera.main.ScreenToWorldPoint(eventData.position);
