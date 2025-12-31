@@ -135,7 +135,7 @@ public class HandManager : MonoBehaviour
         playerHandUI.bottomArea.GetComponentInChildren<DropArea>().LockCards();
         playerHandUI.unplacedArea.GetComponentInChildren<DropArea>().ClearCards();
 
-        yield return null;  // UnplacedAreaの残ったカードの破棄のために、1フレーム待機する(Destroy()が即時廃棄しない)
+        yield return new WaitForSeconds(0.5f);  // UnplacedAreaの残ったカードの破棄のために、1フレーム以上は待機する(Destroy()が即時廃棄しない)
 
         currentPhase++;
         startPhase();

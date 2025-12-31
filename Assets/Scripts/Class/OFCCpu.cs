@@ -9,6 +9,9 @@ public class OFCCpu : MonoBehaviour
 
     public IEnumerator ActionCpu(HandManager handMg)
     {
+        // l‚¦‚Ä‚¢‚éƒtƒŠ
+        yield return new WaitForSeconds(2);
+
         PlacePhase phase = handMg.GetCurrentPhase();
 
         for (int i = 0; i < handMg.GetDrawCardsNum(handMg.GetCurrentPhase());i++)
@@ -23,7 +26,6 @@ public class OFCCpu : MonoBehaviour
             }
         }
 
-        yield return new WaitForSeconds(5);
         handMg.EndPhase();
     }
 
