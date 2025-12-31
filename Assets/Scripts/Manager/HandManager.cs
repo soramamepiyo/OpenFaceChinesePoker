@@ -91,7 +91,7 @@ public class HandManager : MonoBehaviour
     private void startPhase()
     {
         DealCards();
-
+        currentPlayerIndex = firstPlayerIndex;
         if (currentPlayerIndex == 0) startPlayerTurn();
     }
 
@@ -134,6 +134,10 @@ public class HandManager : MonoBehaviour
         playerHandUI.middleArea.GetComponentInChildren<DropArea>().LockCards();
         playerHandUI.bottomArea.GetComponentInChildren<DropArea>().LockCards();
         playerHandUI.unplacedArea.GetComponentInChildren<DropArea>().ClearCards();
+        enemyHandUI.topArea.GetComponentInChildren<DropArea>().LockCards();
+        enemyHandUI.middleArea.GetComponentInChildren<DropArea>().LockCards();
+        enemyHandUI.bottomArea.GetComponentInChildren<DropArea>().LockCards();
+        enemyHandUI.unplacedArea.GetComponentInChildren<DropArea>().ClearCards();
 
         yield return new WaitForSeconds(0.5f);  // UnplacedAreaの残ったカードの破棄のために、1フレーム以上は待機する(Destroy()が即時廃棄しない)
 

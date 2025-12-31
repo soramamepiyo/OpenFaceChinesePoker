@@ -12,9 +12,7 @@ public class OFCCpu : MonoBehaviour
         // l‚¦‚Ä‚¢‚éƒtƒŠ
         yield return new WaitForSeconds(2);
 
-        PlacePhase phase = handMg.GetCurrentPhase();
-
-        for (int i = 0; i < handMg.GetDrawCardsNum(handMg.GetCurrentPhase());i++)
+        for (int i = 0; i < getPlaceCardsNum(handMg.GetCurrentPhase());i++)
         {
             CardUI card = handMg.enemyHandUI.unplacedArea.GetComponentInChildren<CardUI>();
             if (card == null) {
@@ -38,5 +36,10 @@ public class OFCCpu : MonoBehaviour
         card.SetArea(area, d_area.transform);
         handMg.enemyHandUI.ArrangeAlignPlacedArea();
         return true;
+    }
+
+    private int getPlaceCardsNum(PlacePhase phase)
+    {
+        return (phase == PlacePhase.First) ? 5 : 2;
     }
 }
