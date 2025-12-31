@@ -150,22 +150,31 @@ public class HandManager : MonoBehaviour
         resultPanel.SetActive(true);
         ResultPanelUI rp_ui = resultPanel.GetComponent<ResultPanelUI>();
        
-        Dictionary<AreaType, List<Card>> placed_cards = new Dictionary<AreaType, List<Card>>();
-        placed_cards.Add(AreaType.Top,    playerHandUI.topArea.GetComponentInChildren<DropArea>().GetCards());
-        placed_cards.Add(AreaType.Middle, playerHandUI.middleArea.GetComponentInChildren<DropArea>().GetCards());
-        placed_cards.Add(AreaType.Bottom, playerHandUI.bottomArea.GetComponentInChildren<DropArea>().GetCards());
+        Dictionary<AreaType, List<Card>> p_placed_cards = new Dictionary<AreaType, List<Card>>();
+        p_placed_cards.Add(AreaType.Top,    playerHandUI.topArea.GetComponentInChildren<DropArea>().GetCards());
+        p_placed_cards.Add(AreaType.Middle, playerHandUI.middleArea.GetComponentInChildren<DropArea>().GetCards());
+        p_placed_cards.Add(AreaType.Bottom, playerHandUI.bottomArea.GetComponentInChildren<DropArea>().GetCards());
+        Dictionary<AreaType, List<Card>> e_placed_cards = new Dictionary<AreaType, List<Card>>();
+        e_placed_cards.Add(AreaType.Top,    enemyHandUI.topArea.GetComponentInChildren<DropArea>().GetCards());
+        e_placed_cards.Add(AreaType.Middle, enemyHandUI.middleArea.GetComponentInChildren<DropArea>().GetCards());
+        e_placed_cards.Add(AreaType.Bottom, enemyHandUI.bottomArea.GetComponentInChildren<DropArea>().GetCards());
         
-        Dictionary<AreaType, EvaluationResult> result = evaluator.Evaluate(placed_cards);
-        int top_point = scoreCalculator.GetAreaScore(result[AreaType.Top],    AreaType.Top);
-        int mid_point = scoreCalculator.GetAreaScore(result[AreaType.Middle], AreaType.Middle);
-        int btm_point = scoreCalculator.GetAreaScore(result[AreaType.Bottom], AreaType.Bottom);
+        Dictionary<AreaType, EvaluationResult> p_result = evaluator.Evaluate(p_placed_cards);
+        Dictionary<AreaType, EvaluationResult> e_result = evaluator.Evaluate(e_placed_cards);
 
-        Debug.Log("T: " + top_point);
-        Debug.Log("M: " + mid_point);
-        Debug.Log("B: " + btm_point);
+        rp_ui.SetCards(
+            p_placed_cards[AreaType.Top], p_placed_cards[AreaType.Middle], p_placed_cards[AreaType.Bottom],
+            e_placed_cards[AreaType.Top], e_placed_cards[AreaType.Middle], e_placed_cards[AreaType.Bottom]);
+        rp_ui.SetText(
+            p_result[AreaType.Top], p_result[AreaType.Middle], p_result[AreaType.Bottom],
+            scoreCalculator.GetAreaScore(p_result[AreaType.Top], AreaType.Top),
+            scoreCalculator.GetAreaScore(p_result[AreaType.Middle], AreaType.Middle),
+            scoreCalculator.GetAreaScore(p_result[AreaType.Bottom], AreaType.Bottom),
+            e_result[AreaType.Top], e_result[AreaType.Middle], e_result[AreaType.Bottom],
+            scoreCalculator.GetAreaScore(e_result[AreaType.Top], AreaType.Top),
+            scoreCalculator.GetAreaScore(e_result[AreaType.Middle], AreaType.Middle),
+            scoreCalculator.GetAreaScore(e_result[AreaType.Bottom], AreaType.Bottom)
+            );
 
-        rp_ui.SetCards(placed_cards[AreaType.Top], placed_cards[AreaType.Middle], placed_cards[AreaType.Bottom]);
-        rp_ui.SetText(result[AreaType.Top], result[AreaType.Middle], result[AreaType.Bottom], 
-            top_point, mid_point, btm_point);
     }
 }

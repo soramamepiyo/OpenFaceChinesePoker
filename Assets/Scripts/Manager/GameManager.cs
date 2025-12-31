@@ -8,9 +8,6 @@ public class GameManager : MonoBehaviour
     private HandManager handManager;
     [SerializeField] private HandManager handManagerPrefab;
     
-    private int currentPlayerIndex = 0;
-    private bool gameStarted = false;
-
     void Start()
     {
         SetupHand();
