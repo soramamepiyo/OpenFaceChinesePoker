@@ -22,8 +22,8 @@ public class HandManager : MonoBehaviour
     [SerializeField] private PlacePhase currentPhase;
     [SerializeField] private int firstPlayerIndex;   // 0 or 1
     [SerializeField] private int currentPlayerIndex;   // 0 or 1
-    [SerializeField] private HandUI playerHandUI;
-    [SerializeField] public HandUI enemyHandUI;
+    [SerializeField] public  HandUI playerHandUI;
+    [SerializeField] public  HandUI enemyHandUI;
     [SerializeField] private HandEvaluator evaluator;
     [SerializeField] private OFCScoreCalculator scoreCalculator;
     [SerializeField] private OFCCpu ofcCpu;
@@ -176,5 +176,9 @@ public class HandManager : MonoBehaviour
             scoreCalculator.GetAreaScore(e_result[AreaType.Bottom], AreaType.Bottom)
             );
 
+        rp_ui.SetBurstText(
+            !evaluator.CheckIsNotBurst(p_result), 
+            !evaluator.CheckIsNotBurst(e_result)
+            );
     }
 }

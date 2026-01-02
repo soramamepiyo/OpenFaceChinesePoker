@@ -27,6 +27,9 @@ public class ResultPanelUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI e_topPoint;
     [SerializeField] private TextMeshProUGUI e_middlePoint;
     [SerializeField] private TextMeshProUGUI e_bottomPoint;
+    [Header("バースト")]
+    [SerializeField] private GameObject p_burstText;
+    [SerializeField] private GameObject e_burstText;
 
     public void SetCards(
         List<Card> player_top, List<Card> player_middle, List<Card> player_bottom, 
@@ -77,6 +80,12 @@ public class ResultPanelUI : MonoBehaviour
         e_topPoint.text   = e_pt_top.ToString() + "pt";
         e_middlePoint.text= e_pt_mid.ToString() + "pt";
         e_bottomPoint.text= e_pt_bot.ToString() + "pt";
+    }
+
+    public void SetBurstText(bool p_is_burst, bool e_is_burst)
+    {
+        p_burstText.SetActive(p_is_burst);
+        e_burstText.SetActive(e_is_burst);
     }
 
     private Sprite GetDeck05Sprite(Card card)

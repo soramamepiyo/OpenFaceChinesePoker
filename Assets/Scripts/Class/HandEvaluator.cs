@@ -37,7 +37,7 @@ public class HandEvaluator : MonoBehaviour
         EvaluationResult boarder_er = new EvaluationResult();
 
         // Bottom から計算(バーストしないようにJOKERで調整する都合)
-        if (cards[AreaType.Bottom].Count == 5) 
+        if (cards[AreaType.Bottom].Count == 5)
         {
             EvaluationResult er = EvaluateWithJoker(cards[AreaType.Bottom], AreaType.Bottom, boarder_er);
             ret.Add(AreaType.Bottom, er);
@@ -55,10 +55,20 @@ public class HandEvaluator : MonoBehaviour
         else throw new ArgumentException("Middle Hand must be 5 cards.");
 
         // Topから計算
-        if (cards[AreaType.Top].Count == 3)  ret.Add(AreaType.Top, EvaluateWithJoker(cards[AreaType.Top], AreaType.Top, boarder_er));
+        if (cards[AreaType.Top].Count == 3) ret.Add(AreaType.Top, EvaluateWithJoker(cards[AreaType.Top], AreaType.Top, boarder_er));
         else throw new ArgumentException("Top Hand must be 3 cards.");
 
         return ret;
+    }
+
+    // ===========================
+    // ▼ バーストチェック関数
+    // ===========================
+    public bool CheckIsNotBurst(Dictionary<AreaType, EvaluationResult> result)
+    {
+        if (IsBetter(result[AreaType.Top],    result[AreaType.Middle])) return false;
+        if (IsBetter(result[AreaType.Middle], result[AreaType.Bottom])) return false;
+        return true;
     }
 
     private EvaluationResult EvaluateWithJoker(List<Card> cards, AreaType area, EvaluationResult boarder)
@@ -121,7 +131,7 @@ public class HandEvaluator : MonoBehaviour
     private EvaluationResult Evaluate3CardNoJoker(List<Card> cards)
     {
         var values = cards.Select(c => (int)c.rank).OrderByDescending(v => v).ToList();
-        
+
         int threeKind = FindNKindValue(cards, 3);
         List<int> pairs = FindPairs(cards);
 
