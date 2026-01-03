@@ -46,12 +46,6 @@ public class HandManager : MonoBehaviour
         players.Add(new Player("Player"));
         players.Add(new Player("CPU", true));
 
-        foreach (var player in players)
-        {
-            // 手札情報（Top/Middle/Bottom）をリセット
-            player.ResetHand();
-        }
-
         startPhase();
     }
 
